@@ -102,14 +102,6 @@ int allplot(){
       hist_numjet->Fill(Jack::njets(),Jack::evt_scale1fb()*lumi*corr);
     }
   }
-  //hist_e->Fill(e,Jack::evt_scale1fb()*lumi*corr);
-  //hist_m->Fill(m,Jack::evt_scale1fb()*lumi*corr);
-  //hist_eb->Fill(eb,Jack::evt_scale1fb()*lumi*corr); 
-  //hist_mb->Fill(mb,Jack::evt_scale1fb()*lumi*corr);
-
-
-//}
-//}
  
   //using dataMCplotMaker to plot the hists made 
   
@@ -152,62 +144,6 @@ int allplot(){
 
   vec8_hist.push_back(hist_numjet);
   vec8_titles.push_back("Z #rightarrow l^{+} l^{-}");                              dataMCplotMaker (null,vec8_hist,vec8_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
-
-
- // vec9_hist.push_back(hist_e);
- // vec9_hist.push_back(hist_eb);
- // vec9_titles.push_back("Z #rightarrow l^{+} l^{-} after ID");
- // vec9_titles.push_back("Z #rightarrow l^{+} l^{-} before ID");                           
- //  dataMCplotMaker (null,vec9_hist,vec9_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--noStack --legendRight -0.1 --setMaximum 10e9  --noXaxisUnit --xAxisLabel number of electron  --outputName numelectrons --noDivisionLabel"); 
-
-
-
- //vec10_hist.push_back(hist_m);
-// vec10_hist.push_back(hist_mb);
-// vec10_titles.push_back("Z #rightarrow l^{+} l^{-} after ID");  
-// vec10_titles.push_back("Z #rightarrow l^{+} l^{-} before ID");                     
-// dataMCplotMaker (null,vec10_hist,vec10_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--noStack --legendRight -0.1 --setMaximum 10e9 --noXaxisUnit --xAxisLabel number of muon  --outputName nummuons --noDivisionLabel"); 
-
-
-
-
-
- //TCanvas *canvas1 = new TCanvas("canvas1");
-  //hist->Draw();
-  //canvas1->Print("met.pdf");
- 
-  //TCanvas *canvas2 = new TCanvas("canvas2");
- // hist_pt->Draw();
- // canvas2->Print("lep_pt.pdf");
-
- // TCanvas *canvas3 = new TCanvas("canvas3");
- // hist_eta->Draw();
- // canvas3->Print("lep_eta.pdf");
-
-  //TCanvas *canvas4 = new TCanvas("canvas4");
- // hist_phi->Draw();
- // canvas4->Print("lep_phi.pdf");
-
- // TCanvas *canvas5 = new TCanvas("canvas5");
- // hist_pt1->Draw();                
-  //canvas5->Print("Z_pt.pdf");
-                                
- // TCanvas *canvas6 = new TCanvas("canvas6");
- // hist_eta1->Scale(1.0/hist_eta1->Integral());
-  //hist_eta1->Draw();
-  //canvas6->Print("Z_eta.pdf");
-                                
-  //TCanvas *canvas7 = new TCanvas("canvas7");
-  //hist_phi1->Draw();
-  //canvas7->Print("Z_phi.pdf");
- 
-  //TCanvas *canvas8 = new TCanvas("canvas8");
-  //hist_mass1->Draw();
-  //canvas8->Print("Z_mass.pdf");
-
- // TCanvas *canvas9 = new TCanvas("canvas9");
- // hist_numjet->Draw();
- // canvas9->Print("numjets.pdf");
 
   return 0;
 }
