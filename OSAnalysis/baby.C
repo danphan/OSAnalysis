@@ -27,14 +27,14 @@ int chooseBestHyp(){
     //Choosing p4, ID
     LorentzVector lep1 = tas::hyp_ll_p4().at(i);
     LorentzVector lep2 = tas::hyp_lt_p4().at(i); 
-    int id10 = tas::hyp_ll_id().at(i);
-    int id20 = tas::hyp_lt_id().at(i);
+    int id1 = tas::hyp_ll_id().at(i);
+    int id2 = tas::hyp_lt_id().at(i);
 
     //Throw away SS leptons
-    if (id10*id20 > 0) continue;
+    if (id1*id2 > 0) continue;
 
     //Throw away if leptons are not same flavor
-    if (abs(id10) != abs(id20)) continue;
+    if (abs(id1) != abs(id2)) continue;
   
     //Kinematic cuts
     if (lep1.pt()<=20) continue;
@@ -143,8 +143,7 @@ int baby(){
   float met = 0;
   int njets = 0;
   float ht = 0;
-  float evt_scale1fb; 
-  float evt_pfmet;
+  float scale1fb = 0; 
   int lep1_id = 0;
   int lep2_id = 0;
   int lep1_idx = 0; 
@@ -179,8 +178,7 @@ int baby(){
   tree_new->Branch("lep2_passes_id", &lep2_passes_id);
   tree_new->Branch("lep1_p4", &lep1_p4);
   tree_new->Branch("lep2_p4", &lep2_p4);
-  tree_new->Branch("evt_scale1fb", &evt_scale1fb);
-  tree_new->Branch("evt_pfmet", &evt_pfmet);
+  tree_new->Branch("scale1fb", &scale1fb);
   tree_new->Branch("pfjets_p4",&pfjets_p4);
 
   unsigned int nEventsTree = tree->GetEntries(); 
@@ -202,14 +200,13 @@ int baby(){
     int index = chooseBestHyp();
     if (index < 0) continue;
 
-   SS::progress(evt, nEventsTree);
+    SS::progress(evt, nEventsTree);
   
-   evt_pfmet = tas::evt_pfmet();         
+    met = tas::evt_pfmet();         
                                          
-   evt_scale1fb = tas::evt_scale1fb();   
+    scale1fb = tas::evt_scale1fb();   
 
-
-    //Lepton Stuff
+   //Lepton Stuff
     lep1_id = tas::hyp_ll_id().at(index);
     lep2_id = tas::hyp_lt_id().at(index);
     lep1_idx = tas::hyp_ll_index().at(index);
@@ -240,8 +237,6 @@ int baby(){
     
     tree_new->Fill();  
   }
-
-  
 
   file_new->cd();
   tree_new->Write();
