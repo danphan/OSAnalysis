@@ -11,18 +11,17 @@
 int allplot(){
  
 
-  TFile *file2 = new TFile("/home/users/yanjunhe/baby.root");
+  TFile *file = new TFile("/home/users/yanjunhe/baby.root");
 
 
-  TTree *tree2 = (TTree*)file2->Get("tree");
+  TTree *tree = (TTree*)file->Get("tree");
 
 
-
+  //lumi and corr for these events
 
   float lumi = 19.5;
 
-//  float corr1 = 27137253/62297; 
-  float corr2 = 5872648/40000;
+  float corr = 5872648/40000;
 
  
   TH1F *hist = new TH1F("hist", "met", 50, 0, 70);
@@ -42,79 +41,78 @@ int allplot(){
 
 
 
-  cout << tree2->GetEntries() << endl;
+  cout << tree->GetEntries() << endl;
   
-  Object.Init(tree2);
+  Object.Init(tree);
 
-  unsigned int nEventsTree2 = tree2->GetEntriesFast();
+  unsigned int nEventsTree = tree->GetEntriesFast();
 
-  int dummy2 = 0;
+  int dummy = 0;
 
-  for(unsigned int evt2 = 0; evt2 < nEventsTree2; evt2++) { 
+  for(unsigned int evt = 0; evt < nEventsTree; evt++) { 
  //  int nj = 0; 
  //  int e = 0;
  //  int eb = 0;
  //  int m = 0;
  //  int mb = 0;  
-   Object.GetEntry(evt2);
-     
+    Object.GetEntry(evt);
    
+    //define leptons
+    LorentzVector lep1 = Jack::lep1_p4(); 
+    LorentzVector lep2 = Jack::lep2_p4(); 
   
-      //define leptons
-      LorentzVector lep12 = Jack::lep1_p4(); 
-      LorentzVector lep22 = Jack::lep2_p4(); 
-   
-      dummy2 = 1;   
-      
-      LorentzVector z_cand2 = lep12 + lep22;
+
+    //this dummy variable seems superfluous 
+    dummy = 1;   
+    
+    LorentzVector z_cand = lep1 + lep2;
  
-      //If we get this, have OS, SF lepton, make a plot
-      hist_pt->Fill(lep12.pt(),Jack::evt_scale1fb()*lumi*corr2);   //Jack::evt_scale1fb()*lumi*corr2
-      hist_pt->Fill(lep22.pt(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_eta->Fill(lep12.eta(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_eta->Fill(lep22.eta(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_phi->Fill(lep12.phi(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_phi->Fill(lep22.phi(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_pt1->Fill(z_cand2.pt(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_eta1->Fill(z_cand2.eta(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_phi1->Fill(z_cand2.phi(),Jack::evt_scale1fb()*lumi*corr2);
-      hist_mass1->Fill(z_cand2.mass(),Jack::evt_scale1fb()*lumi*corr2); 
+    //fill plots with information about dileptons
+    hist_pt->Fill(lep1.pt(),Jack::evt_scale1fb()*lumi*corr);   //Jack::evt_scale1fb()*lumi*corr
+    hist_pt->Fill(lep2.pt(),Jack::evt_scale1fb()*lumi*corr);
+    hist_eta->Fill(lep1.eta(),Jack::evt_scale1fb()*lumi*corr);
+    hist_eta->Fill(lep2.eta(),Jack::evt_scale1fb()*lumi*corr);
+    hist_phi->Fill(lep1.phi(),Jack::evt_scale1fb()*lumi*corr);
+    hist_phi->Fill(lep2.phi(),Jack::evt_scale1fb()*lumi*corr);
+    hist_pt1->Fill(z_cand.pt(),Jack::evt_scale1fb()*lumi*corr);
+    hist_eta1->Fill(z_cand.eta(),Jack::evt_scale1fb()*lumi*corr);
+    hist_phi1->Fill(z_cand.phi(),Jack::evt_scale1fb()*lumi*corr);
+    hist_mass1->Fill(z_cand.mass(),Jack::evt_scale1fb()*lumi*corr); 
 
-            
-
-
-//     for  (unsigned int q = 0; q < Jack::pfjets_p4().size();q++) {
-       
-  //        LorentzVector jet2 = Jack::pfjets_p4().at(q);     
-          
-  //        bool uu = 1;
-      
-    //      if (jet2.pt()<=30 || abs(jet2.eta())>=3 ) continue;
-      
-    //      for(unsigned int w = 0; w < lepton_cands2.size(); w++) {
-      //      if (ROOT::Math::VectorUtil::DeltaR(lepton_cands2.at(w),jet2) < 0.1)              {
-      //        uu = 0;
-       //       break;}
-//}  
-  //   if (uu == 1) nj++;
-   //  }
-
-
-  
-
-  if (dummy2 == 1) {hist->Fill(Jack::evt_pfmet(),Jack::evt_scale1fb()*lumi*corr2);
-   hist_numjet->Fill(Jack::njets(),Jack::evt_scale1fb()*lumi*corr2);}
-
-}
-//hist_e->Fill(e,Jack::evt_scale1fb()*lumi*corr2); hist_m->Fill(m,Jack::evt_scale1fb()*lumi*corr2);
-// hist_eb->Fill(eb,Jack::evt_scale1fb()*lumi*corr2); hist_mb->Fill(mb,Jack::evt_scale1fb()*lumi*corr2);
+           
+ // for  (unsigned int q = 0; q < Jack::pfjets_p4().size();q++) {
+ // 
+ //   LorentzVector jet2 = Jack::pfjets_p4().at(q);     
+ //   
+ //   bool uu = 1;
+ //   
+ //   if (jet2.pt()<=30 || abs(jet2.eta())>=3 ) continue;
+ //   
+ //   for(unsigned int w = 0; w < lepton_cands2.size(); w++) {
+ //     if (ROOT::Math::VectorUtil::DeltaR(lepton_cands2.at(w),jet2) < 0.1) {
+ //       uu = 0;
+ //       break;
+ //     }
+ //   }  
+ //   if (uu == 1) nj++;
+ // }
+   
+    if (dummy == 1) {
+      hist->Fill(Jack::evt_pfmet(),Jack::evt_scale1fb()*lumi*corr);
+      hist_numjet->Fill(Jack::njets(),Jack::evt_scale1fb()*lumi*corr);
+    }
+  }
+  //hist_e->Fill(e,Jack::evt_scale1fb()*lumi*corr);
+  //hist_m->Fill(m,Jack::evt_scale1fb()*lumi*corr);
+  //hist_eb->Fill(eb,Jack::evt_scale1fb()*lumi*corr); 
+  //hist_mb->Fill(mb,Jack::evt_scale1fb()*lumi*corr);
 
 
 //}
 //}
  
-
-
+  //using dataMCplotMaker to plot the hists made 
+  
   TH1F* null = new TH1F("","",1,0,1);
  
   vector <TH1F*> vec1_hist,vec2_hist,vec3_hist,vec4_hist,vec5_hist,vec6_hist,vec7_hist,vec_hist,vec8_hist;//,vec9_hist,vec10_hist,vec_hist;
@@ -122,8 +120,8 @@ int allplot(){
 
   vector <char*> vec1_titles,vec2_titles,vec3_titles,vec4_titles,vec5_titles,vec6_titles,vec7_titles,vec_titles,vec8_titles;//,vec9_titles,vec10_titles;
  
- vec_hist.push_back(hist); 
- vec_titles.push_back("Z #rightarrow l^{+} l^{-}");
+  vec_hist.push_back(hist); 
+  vec_titles.push_back("Z #rightarrow l^{+} l^{-}");
   dataMCplotMaker (null,vec_hist,vec_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--legendRight -0.05 --isLinear --outputName met --xAxisLabel MET");
  
 
