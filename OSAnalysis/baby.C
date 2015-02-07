@@ -2,7 +2,6 @@
 #include "/home/users/danphan/Jack/CORE/CMS2.h"
 #include "/home/users/cgeorge/CORE/CORE-run1/susySelections.h"
 #include "/home/users/cgeorge/CORE/CORE-run1/muonSelections.h"
-//#include "TCanvas.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "Math/VectorUtil.h" //needed for deltaR stuff
@@ -188,7 +187,7 @@ int baby(){
 
   cms2.Init(tree);
 
-  //Loop over all events in tree
+//Loop over all events in tree
   for(unsigned int evt = 0; evt < nEventsTree; evt++){
    // if (evt > 100) break;
     cms2.GetEntry(evt);
@@ -196,19 +195,15 @@ int baby(){
     //Initialize
     njets = 0;
     ht = 0; 
-//std::cout << __LINE__ << std::endl;
     if (tas::hyp_ll_id().size() < 1) continue;
-// std::cout << __LINE__ << std::endl;
-    //MET stuff
-  
-  
   
     //Choose Best Hypothesis
    
     int index = chooseBestHyp();
     if (index < 0) continue;
 
-
+   SS::progress(evt, nEventsTree);
+  
    evt_pfmet = tas::evt_pfmet();         
                                          
    evt_scale1fb = tas::evt_scale1fb();   
