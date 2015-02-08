@@ -17,7 +17,7 @@ int allplot(){
 
   TTree *tree = (TTree*)file->Get("tree");
 
- //lumi and corr for these events
+  //lumi and corr for these events
 
   float lumi = 19.5;
 
@@ -53,7 +53,7 @@ int allplot(){
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
-    hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   //Jack::evt_scale1fb()*lumi*corr
+    hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
     hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
     hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
     hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
@@ -72,9 +72,9 @@ int allplot(){
   
   TH1F* null = new TH1F("","",1,0,1);
  
-  vector <TH1F*> vec1_hist,vec2_hist,vec3_hist,vec4_hist,vec5_hist,vec6_hist,vec7_hist,vec_hist,vec8_hist;//,vec9_hist,vec10_hist,vec_hist;
+  vector <TH1F*> vec1_hist,vec2_hist,vec3_hist,vec4_hist,vec5_hist,vec6_hist,vec7_hist,vec_hist,vec8_hist;
 
-  vector <char*> vec1_titles,vec2_titles,vec3_titles,vec4_titles,vec5_titles,vec6_titles,vec7_titles,vec_titles,vec8_titles;//,vec9_titles,vec10_titles;
+  vector <char*> vec1_titles,vec2_titles,vec3_titles,vec4_titles,vec5_titles,vec6_titles,vec7_titles,vec_titles,vec8_titles;
  
   vec_hist.push_back(hist); 
   vec_titles.push_back("Z #rightarrow l^{+} l^{-}");
