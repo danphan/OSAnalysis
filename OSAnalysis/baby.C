@@ -2,6 +2,7 @@
 #include "/home/users/danphan/Jack/CORE/CMS2.h"
 #include "/home/users/cgeorge/CORE/CORE-run1/susySelections.h"
 #include "/home/users/cgeorge/CORE/CORE-run1/muonSelections.h"
+#include "/home/users/cgeorge/CORE/CORE-run1/ssSelections.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "Math/VectorUtil.h" //needed for deltaR stuff
@@ -125,11 +126,14 @@ int chooseBestHyp(){
     }
   }
   
-   return index4;
+  return index4;
 
 }
 
 int baby(){
+
+  //switch to choose whether to loop through all events or not
+  bool allEvents = false;
 
   //Declare TTree and TFile that will be filled with data
   TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
@@ -159,8 +163,6 @@ int baby(){
   LorentzVector lep2_p4;
   LorentzVector pfjets_p4;
 
-
-
   //Branches
   tree_new->Branch("met", &met);
   tree_new->Branch("ht", &ht);
@@ -185,9 +187,9 @@ int baby(){
 
   cms2.Init(tree);
 
-//Loop over all events in tree
-  for(unsigned int evt = 0; evt < nEventsTree; evt++){
-   // if (evt > 100) break;
+  //Loop over all events in tree
+  for(unsigned int evt = 0; evt < (allEvents == true ? nEventsTree : 100) ; evt++){
+
     cms2.GetEntry(evt);
 
     //Initialize
@@ -200,22 +202,22 @@ int baby(){
     int index = chooseBestHyp();
     if (index < 0) continue;
 
-    SS::progress(evt, nEventsTree);
+    CMS2::progress(evt, nEventsTree);
   
     met = tas::evt_pfmet();         
                                          
     scale1fb = tas::evt_scale1fb();   
 
-   //Lepton Stuff
+    //Lepton Stuff
     lep1_id = tas::hyp_ll_id().at(index);
     lep2_id = tas::hyp_lt_id().at(index);
     lep1_idx = tas::hyp_ll_index().at(index);
     lep2_idx = tas::hyp_lt_index().at(index);
     lep1_mc_id = abs(lep1_id) == 11 ? tas::els_mc_id().at(lep1_idx) : tas::mus_mc_id().at(lep1_idx);
     lep2_mc_id = abs(lep2_id) == 11 ? tas::els_mc_id().at(lep2_idx) : tas::mus_mc_id().at(lep2_idx);
-    hyp_type = -1; 
-    lep1_iso = -1;
-    lep2_iso = -1;
+    hyp_type = tas::hyp_type().at(index); 
+    lep1_iso = abs(lep1_id) == 11 ? samesign::electronIsolationPF2012(lep1_idx) : muonIsoValuePF2012_deltaBeta(lep1_idx);
+    lep2_iso = abs(lep2_id) == 11 ? samesign::electronIsolationPF2012(lep2_idx) : muonIsoValuePF2012_deltaBeta(lep2_idx);
     lep1_passes_id = false;  
     lep2_passes_id = false;
     lep1_p4 = tas::hyp_ll_p4().at(index);
