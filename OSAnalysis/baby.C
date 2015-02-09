@@ -6,11 +6,12 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Math/VectorUtil.h" //needed for deltaR stuff
+#include "TChain.h"
 
 using namespace std;
 
 //Parameters
-char* filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
+char* input_filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
 char* outputName = "baby";
 char* treeName = "babyTree";
 
@@ -140,7 +141,7 @@ int baby(){
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
 
   //open up file that has data in it 
-  TFile *file = new TFile(Form("%s",filename)); 
+  TFile *file = new TFile(Form("%s",input_filename)); 
   TTree *tree = (TTree*)file->Get("Events");
 
   //initializing variable to be filled in tree
@@ -161,7 +162,16 @@ int baby(){
   bool lep2_passes_id = false; 
   LorentzVector lep1_p4;
   LorentzVector lep2_p4;
-  LorentzVector pfjets_p4;
+  vector <LorentzVector> jets_p4;
+  vector <float> jets_disc;
+  vector <int> gen_id;
+  vector <int> gen_status;
+  vector <LorentzVector> gen_p4;
+  int event = 0;
+  int lumi = 0;
+  int run = 0;
+  int nBjets = 0;
+  TString filename;
 
   //Branches
   tree_new->Branch("met", &met);
@@ -181,7 +191,16 @@ int baby(){
   tree_new->Branch("lep1_p4", &lep1_p4);
   tree_new->Branch("lep2_p4", &lep2_p4);
   tree_new->Branch("scale1fb", &scale1fb);
-  tree_new->Branch("pfjets_p4",&pfjets_p4);
+  tree_new->Branch("jets_p4",&jets_p4);
+  tree_new->Branch("jets_disc",&jets_disc);
+  tree_new->Branch("event", &event);
+  tree_new->Branch("lumi", &lumi);
+  tree_new->Branch("run", &run);
+  tree_new->Branch("gen_id", &gen_id);
+  tree_new->Branch("gen_status", &gen_status);
+  tree_new->Branch("gen_p4", &gen_p4);
+  tree_new->Branch("filename", &filename);
+  tree_new->Branch("nBjets", &nBjets);
 
   unsigned int nEventsTree = tree->GetEntries(); 
 
@@ -191,21 +210,28 @@ int baby(){
   for(unsigned int evt = 0; evt < (allEvents == -1 ? nEventsTree : allEvents) ; evt++){
 
     cms2.GetEntry(evt);
-
+  
     //Initialize
     njets = 0;
+    nBjets = 0;
     ht = 0; 
     if (tas::hyp_ll_id().size() < 1) continue;
   
     //Choose Best Hypothesis
     int index = chooseBestHyp();
     if (index < 0) continue;
-
+  
     //Progress bar
     CMS2::progress(evt, nEventsTree); 
   
     //Event Stuff
     scale1fb = tas::evt_scale1fb();   
+    event = tas::evt_event();
+    lumi = tas::evt_lumiBlock();
+    run = tas::evt_run();
+
+    //Filename
+    //filename = currentFile->GetTitle(); 
 
     //Met Stuff
     met = tas::evt_pfmet();         
@@ -224,7 +250,17 @@ int baby(){
     lep2_passes_id = false;
     lep1_p4 = tas::hyp_ll_p4().at(index);
     lep2_p4 = tas::hyp_lt_p4().at(index);
-    pfjets_p4 = tas::pfjets_p4().at(index);
+
+    //Gen Stuff
+    for (unsigned int gidx = 0; gidx < tas::genps_p4().size(); gidx++){
+      int status = tas::genps_status().at(gidx);
+      int id = tas::genps_id().at(gidx);
+      LorentzVector p4 = tas::genps_p4().at(gidx);
+
+      gen_status.push_back(status);
+      gen_id.push_back(id);
+      gen_p4.push_back(p4);
+    } 
 
     //Jet stuff
     for(unsigned int j = 0; j < tas::pfjets_p4().size(); j++){
@@ -237,6 +273,12 @@ int baby(){
 
       njets++;
       ht += jet.pt();
+      jets_p4.push_back(jet);
+      float disc = tas::pfjets_combinedSecondaryVertexBJetTag().at(j);
+      jets_disc.push_back(disc);
+
+      if (disc > 0.679) nBjets++;
+
     }
     
     tree_new->Fill();  
