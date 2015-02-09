@@ -17,7 +17,7 @@ char* treeName = "babyTree";
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //switch to choose whether to loop through all events or not
-int allEvents = -1; //Set allEvents to whatever you want
+int allEvents = 50; //Set allEvents to whatever you want
 
 int chooseBestHyp(){
 
@@ -135,8 +135,6 @@ int chooseBestHyp(){
 
 int baby(){
 
- 
-
   //Declare TTree and TFile that will be filled with data
   TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
@@ -200,16 +198,18 @@ int baby(){
     if (tas::hyp_ll_id().size() < 1) continue;
   
     //Choose Best Hypothesis
-   
     int index = chooseBestHyp();
     if (index < 0) continue;
 
+    //Progress bar
     CMS2::progress(evt, nEventsTree); 
   
-    met = tas::evt_pfmet();         
-                                         
+    //Event Stuff
     scale1fb = tas::evt_scale1fb();   
 
+    //Met Stuff
+    met = tas::evt_pfmet();         
+                                         
     //Lepton Stuff
     lep1_id = tas::hyp_ll_id().at(index);
     lep2_id = tas::hyp_lt_id().at(index);
