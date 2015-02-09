@@ -65,12 +65,9 @@ protected:
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > *lep2_p4_;
 	TBranch *lep2_p4_branch;
 	bool lep2_p4_isLoaded;
-	float	evt_scale1fb_;
-	TBranch *evt_scale1fb_branch;
-	bool evt_scale1fb_isLoaded;
-	float	evt_pfmet_;
-	TBranch *evt_pfmet_branch;
-	bool evt_pfmet_isLoaded;
+	float	scale1fb_;
+	TBranch *scale1fb_branch;
+	bool scale1fb_isLoaded;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > *pfjets_p4_;
 	TBranch *pfjets_p4_branch;
 	bool pfjets_p4_isLoaded;
@@ -162,15 +159,10 @@ void Init(TTree *tree) {
 		lep2_passes_id_branch = tree->GetBranch("lep2_passes_id");
 		if (lep2_passes_id_branch) {lep2_passes_id_branch->SetAddress(&lep2_passes_id_);}
 	}
-	evt_scale1fb_branch = 0;
-	if (tree->GetBranch("evt_scale1fb") != 0) {
-		evt_scale1fb_branch = tree->GetBranch("evt_scale1fb");
-		if (evt_scale1fb_branch) {evt_scale1fb_branch->SetAddress(&evt_scale1fb_);}
-	}
-	evt_pfmet_branch = 0;
-	if (tree->GetBranch("evt_pfmet") != 0) {
-		evt_pfmet_branch = tree->GetBranch("evt_pfmet");
-		if (evt_pfmet_branch) {evt_pfmet_branch->SetAddress(&evt_pfmet_);}
+	scale1fb_branch = 0;
+	if (tree->GetBranch("scale1fb") != 0) {
+		scale1fb_branch = tree->GetBranch("scale1fb");
+		if (scale1fb_branch) {scale1fb_branch->SetAddress(&scale1fb_);}
 	}
   tree->SetMakeClass(0);
 }
@@ -194,8 +186,7 @@ void GetEntry(unsigned int idx)
 		lep2_passes_id_isLoaded = false;
 		lep1_p4_isLoaded = false;
 		lep2_p4_isLoaded = false;
-		evt_scale1fb_isLoaded = false;
-		evt_pfmet_isLoaded = false;
+		scale1fb_isLoaded = false;
 		pfjets_p4_isLoaded = false;
 	}
 
@@ -218,8 +209,7 @@ void LoadAllBranches()
 	if (lep2_passes_id_branch != 0) lep2_passes_id();
 	if (lep1_p4_branch != 0) lep1_p4();
 	if (lep2_p4_branch != 0) lep2_p4();
-	if (evt_scale1fb_branch != 0) evt_scale1fb();
-	if (evt_pfmet_branch != 0) evt_pfmet();
+	if (scale1fb_branch != 0) scale1fb();
 	if (pfjets_p4_branch != 0) pfjets_p4();
 }
 
@@ -431,31 +421,18 @@ void LoadAllBranches()
 		}
 		return *lep2_p4_;
 	}
-	float &evt_scale1fb()
+	float &scale1fb()
 	{
-		if (not evt_scale1fb_isLoaded) {
-			if (evt_scale1fb_branch != 0) {
-				evt_scale1fb_branch->GetEntry(index);
+		if (not scale1fb_isLoaded) {
+			if (scale1fb_branch != 0) {
+				scale1fb_branch->GetEntry(index);
 			} else { 
-				printf("branch evt_scale1fb_branch does not exist!\n");
+				printf("branch scale1fb_branch does not exist!\n");
 				exit(1);
 			}
-			evt_scale1fb_isLoaded = true;
+			scale1fb_isLoaded = true;
 		}
-		return evt_scale1fb_;
-	}
-	float &evt_pfmet()
-	{
-		if (not evt_pfmet_isLoaded) {
-			if (evt_pfmet_branch != 0) {
-				evt_pfmet_branch->GetEntry(index);
-			} else { 
-				printf("branch evt_pfmet_branch does not exist!\n");
-				exit(1);
-			}
-			evt_pfmet_isLoaded = true;
-		}
-		return evt_pfmet_;
+		return scale1fb_;
 	}
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &pfjets_p4()
 	{
@@ -494,7 +471,7 @@ void LoadAllBranches()
 };
 
 #ifndef __CINT__
-extern SS Object;
+extern SS object;
 #endif
 
 namespace Jack {
@@ -514,8 +491,7 @@ namespace Jack {
 	const bool &lep2_passes_id();
 	const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &lep1_p4();
 	const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &lep2_p4();
-	const float &evt_scale1fb();
-	const float &evt_pfmet();
+	const float &scale1fb();
 	const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > &pfjets_p4();
 }
 #endif
