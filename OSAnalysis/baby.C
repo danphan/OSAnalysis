@@ -202,7 +202,7 @@ int baby(){
     int index = chooseBestHyp();
     if (index < 0) continue;
 
-    CMS2::progress(evt, nEventsTree);
+    //  CMS2::progress(evt, nEventsTree); Not sure what it is
   
     met = tas::evt_pfmet();         
                                          
