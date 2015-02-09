@@ -35,13 +35,13 @@ int allplot(){
 
   cout << tree->GetEntries() << endl;
   
-  Object.Init(tree);
+  object.Init(tree);
 
   unsigned int nEventsTree = tree->GetEntriesFast();
 
   for(unsigned int evt = 0; evt < nEventsTree; evt++) { 
  
-    Object.GetEntry(evt);
+    object.GetEntry(evt);
    
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
