@@ -1,9 +1,8 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #include "/home/users/yanjunhe/dataMCplotMaker/dataMCplotMaker.h"
-#include "/home/users/yanjunhe/SS.h"
+#include "SS.h"
 #include "/home/users/yanjunhe/CORE/muonSelections.h"
 #include "/home/users/yanjunhe/CORE/susySelections.h"
-#include "TCanvas.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "Math/VectorUtil.h"
@@ -12,7 +11,7 @@ using namespace Jack;
 
 int allplot(){
  
-  TFile *file = new TFile("/home/users/yanjunhe/baby.root");
+  TFile *file = new TFile("baby.root");
 
 
   TTree *tree = (TTree*)file->Get("tree");
@@ -40,8 +39,6 @@ int allplot(){
 
   unsigned int nEventsTree = tree->GetEntriesFast();
 
-  int dummy = 0;
-
   for(unsigned int evt = 0; evt < nEventsTree; evt++) { 
  
     Object.GetEntry(evt);
@@ -63,8 +60,8 @@ int allplot(){
     hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
     hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
-    hist->Fill(Jack::evt_pfmet(), scale1fb()*lumi*corr);
-    hist_numjet->Fill(Jack::njets(), scale1fb()*lumi*corr);
+    hist->Fill(met(), scale1fb()*lumi*corr);
+    hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
   }
  
