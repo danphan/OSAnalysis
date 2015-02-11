@@ -8,8 +8,8 @@
 #include "Math/VectorUtil.h" //needed for deltaR stuff
 #include "TChain.h"
 
-#include "/home/users/cgeorge/old/home/users/cgeorge/old_stuff/analysis/SS/EXTERNAL/dorky.cc"
 #include "/home/users/cgeorge/old_stuff/analysis/SS/EXTERNAL/dorky.h"
+#include "/home/users/yanjunhe/Tools/goodrun.h"
 
 using namespace std;
 
@@ -137,12 +137,16 @@ int chooseBestHyp(){
 
 }
 
- //list of root files
-  TChain chain("tree"); 
-  chain.Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleElectron_Run2012A-13Jul2012-v1_AOD/*.root");
 
 int baby(){
 
+ //list of root files
+  TChain *chain = new TChain("Events"); 
+  chain->Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleElectron_Run2012A-13Jul2012-v1_AOD/merged/merged_ntuple_53.root");
+
+  set_goodrun_file("/home/users/jgran/analysis/sswh/fakes/json/final_19p49fb_cms2.txt");
+
+  unsigned int nEventsDone = 0;
   unsigned int nEventsToDo = chain->GetEntries();
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -152,24 +156,20 @@ int baby(){
   TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
 
-   while (currentFile = (TFile*)fileIter.Next()) {
+ while ((currentFile = (TFile*)fileIter.Next())) {
 
   // TFile *file = new TFile(Form("%s",input_filename)); 
   //open up file that has data in it 
+  if (nEventsDone >= nEventsToDo) continue;
   TFile *file = new TFile(currentFile->GetTitle());
   TTree *tree = (TTree*)file->Get("Events");
 
+  cms2.Init(tree);
+  bool isData = cms2.evt_isRealData();
+
   //if real data, check to see if on good run list
   if (isData == true && goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) == false) continue;
-
-  //Check for duplicates
-  if (isData == true){
-            duplicate_removal::DorkyEventIdentifier id(run_number, event_number, lumiBlock_number);
-            if (duplicate_removal::is_duplicate(id)) continue;
-        }
-
-  cms2.Init(tree);
-
+ 
   //initializing variable to be filled in tree
   float met = 0;
   int njets = 0;
@@ -254,6 +254,13 @@ int baby(){
     lumi = tas::evt_lumiBlock();
     run = tas::evt_run();
 
+     //Check for duplicates
+     if (isData == true){
+               duplicate_removal::DorkyEventIdentifier id(run, event, lumi); 
+               if (duplicate_removal::is_duplicate(id)) continue; 
+    }
+
+
     //Filename
     //filename = currentFile->GetTitle(); 
 
@@ -265,9 +272,13 @@ int baby(){
     lep2_id = tas::hyp_lt_id().at(index);
     lep1_idx = tas::hyp_ll_index().at(index);
     lep2_idx = tas::hyp_lt_index().at(index);
+
+    if (isData == false) {
     lep1_mc_id = abs(lep1_id) == 11 ? tas::els_mc_id().at(lep1_idx) : tas::mus_mc_id().at(lep1_idx);
     lep2_mc_id = abs(lep2_id) == 11 ? tas::els_mc_id().at(lep2_idx) : tas::mus_mc_id().at(lep2_idx);
-    hyp_type = tas::hyp_type().at(index); 
+    hyp_type = tas::hyp_type().at(index); } 
+     else {lep1_mc_id = 1; lep2_mc_id = 1;}
+
     lep1_iso = abs(lep1_id) == 11 ? samesign::electronIsolationPF2012(lep1_idx) : muonIsoValuePF2012_deltaBeta(lep1_idx);
     lep2_iso = abs(lep2_id) == 11 ? samesign::electronIsolationPF2012(lep2_idx) : muonIsoValuePF2012_deltaBeta(lep2_idx);
     lep1_passes_id = false;  
@@ -275,7 +286,7 @@ int baby(){
     lep1_p4 = tas::hyp_ll_p4().at(index);
     lep2_p4 = tas::hyp_lt_p4().at(index);
 
-    //Gen Stuff
+  if (isData == false){  //Gen Stuff
     for (unsigned int gidx = 0; gidx < tas::genps_p4().size(); gidx++){
       int status = tas::genps_status().at(gidx);
       int id = tas::genps_id().at(gidx);
@@ -284,7 +295,13 @@ int baby(){
       gen_status.push_back(status);
       gen_id.push_back(id);
       gen_p4.push_back(p4);
-    } 
+     }
+   } else {
+           int status = 1; int id = 1; LorentzVector p4;
+           gen_status.push_back(status);             
+           gen_id.push_back(id);
+           gen_p4.push_back(p4);
+   }
 
     //Jet stuff
     for(unsigned int j = 0; j < tas::pfjets_p4().size(); j++){
