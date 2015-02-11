@@ -8,10 +8,13 @@
 #include "Math/VectorUtil.h" //needed for deltaR stuff
 #include "TChain.h"
 
+#include "/home/users/cgeorge/old/home/users/cgeorge/old_stuff/analysis/SS/EXTERNAL/dorky.cc"
+#include "/home/users/cgeorge/old_stuff/analysis/SS/EXTERNAL/dorky.h"
+
 using namespace std;
 
 //Parameters
-char* input_filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
+//char* input_filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
 char* outputName = "baby";
 char* treeName = "babyTree";
 
@@ -134,15 +137,38 @@ int chooseBestHyp(){
 
 }
 
+ //list of root files
+  TChain chain("tree"); 
+  chain.Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleElectron_Run2012A-13Jul2012-v1_AOD/*.root");
+
 int baby(){
 
-  //Declare TTree and TFile that will be filled with data
+  unsigned int nEventsToDo = chain->GetEntries();
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  TFile *currentFile = 0;
+
+ //Declare TTree and TFile that will be filled with data
   TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
 
+   while (currentFile = (TFile*)fileIter.Next()) {
+
+  // TFile *file = new TFile(Form("%s",input_filename)); 
   //open up file that has data in it 
-  TFile *file = new TFile(Form("%s",input_filename)); 
+  TFile *file = new TFile(currentFile->GetTitle());
   TTree *tree = (TTree*)file->Get("Events");
+
+  //if real data, check to see if on good run list
+  if (isData == true && goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) == false) continue;
+
+  //Check for duplicates
+  if (isData == true){
+            duplicate_removal::DorkyEventIdentifier id(run_number, event_number, lumiBlock_number);
+            if (duplicate_removal::is_duplicate(id)) continue;
+        }
+
+  cms2.Init(tree);
 
   //initializing variable to be filled in tree
   float met = 0;
@@ -204,9 +230,7 @@ int baby(){
 
   unsigned int nEventsTree = tree->GetEntries(); 
 
-  cms2.Init(tree);
-
-  //Loop over all events in tree
+  //Loop over all events in tree of current file
   for(unsigned int evt = 0; evt < (allEvents == -1 ? nEventsTree : allEvents) ; evt++){
 
     cms2.GetEntry(evt);
@@ -286,6 +310,9 @@ int baby(){
 
   file_new->cd();
   tree_new->Write();
-  
+
+ } 
+
   return 0;
+
 }
