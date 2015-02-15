@@ -334,7 +334,8 @@ int baby(){
       lep1_p4 = tas::hyp_ll_p4().at(index);
       lep2_p4 = tas::hyp_lt_p4().at(index);
 
-      if (isData == false){  //Gen Stuff
+      //Gen Stuff
+      if (isData == false){ 
         for (unsigned int gidx = 0; gidx < tas::genps_p4().size(); gidx++){
           int status = tas::genps_status().at(gidx);
           int id = tas::genps_id().at(gidx);
