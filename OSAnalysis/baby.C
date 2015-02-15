@@ -376,13 +376,16 @@ int baby(){
 
       }
          
-        //Fill tree after each event
-        tree_new->Fill();  
+      //Fill tree after each event
+      tree_new->Fill();  
 
-  }
+    }
+  
+  //close current file and move onto new file
   file->Close();
   delete file;
-}
+  
+  }
 
   file_new->cd();
   tree_new->Write();
