@@ -15,13 +15,13 @@ using namespace std;
 
 //Parameters
 //char* input_filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
-char* outputName = "baby4";
+char* outputName = "baby";
 char* treeName = "babyTree";
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 //switch to choose whether to loop through all events or not
-int allEvents = 50; //Set allEvents to whatever you want
+int allEvents = -1; //Set allEvents to whatever you want
 
 int chooseBestHyp(){
 
@@ -135,6 +135,10 @@ int chooseBestHyp(){
   
   return index4;
 
+  goodhyp.clear();
+  pass1.clear();
+  pass2.clear();
+
 }
 
 
@@ -158,25 +162,16 @@ int baby(){
   TIter fileIter(listOfFiles);
   TFile *currentFile = 0;
 
- //Declare TTree and TFile that will be filled with data
+
+  int temp = 0;
+
+  //Declare TTree and TFile that will be filled with data
   TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
 
- while ((currentFile = (TFile*)fileIter.Next())) {
+  int numEventsDone = 0;
 
-  // TFile *file = new TFile(Form("%s",input_filename)); 
-  //open up file that has data in it 
-  if (nEventsDone >= nEventsToDo) continue;
-  TFile *file = new TFile(currentFile->GetTitle());
-  TTree *tree = (TTree*)file->Get("Events");
-
-  cms2.Init(tree);
-  bool isData = cms2.evt_isRealData();
-
- 
- 
- 
-  //initializing variable to be filled in tree
+  //initializing variables
   float met = 0;
   int njets = 0;
   float ht = 0;
@@ -234,113 +229,167 @@ int baby(){
   tree_new->Branch("filename", &filename);
   tree_new->Branch("nBjets", &nBjets);
 
-  unsigned int nEventsTree = tree->GetEntries(); 
+  //looping over chain 
+  while ((currentFile = (TFile*)fileIter.Next())) {
 
-  //Loop over all events in tree of current file
-  for(unsigned int evt = 0; evt < (allEvents == -1 ? nEventsTree : allEvents) ; evt++){
+    // TFile *file = new TFile(Form("%s",input_filename)); 
 
-    cms2.GetEntry(evt);
-  
-    //Initialize
+    //open up file that has data in it 
+    if (nEventsDone >= nEventsToDo) continue;
+    TFile *file = new TFile(currentFile->GetTitle());
+    TTree *tree = (TTree*)file->Get("Events");
+
+    cms2.Init(tree);
+    bool isData = cms2.evt_isRealData();
+
+    cout << currentFile->GetTitle() << endl; 
+ 
+    //initializing variables again for each file we loop over
+    met = 0;
     njets = 0;
+    ht = 0;
+    scale1fb = 0; 
+    lep1_id = 0;
+    lep2_id = 0;
+    lep1_idx = 0; 
+    lep2_idx = 0; 
+    lep1_mc_id = 0;
+    lep2_mc_id = 0;
+    hyp_type = -1; 
+    lep1_iso = -1; 
+    lep2_iso = -1;
+    lep1_passes_id = false; 
+    lep2_passes_id = false; 
+    // lep1_p4;  //not sure how to reset lorentzvectors to zero, but this doesn't really matter too much i think
+    // lep2_p4;
+    jets_p4.clear();
+    jets_disc.clear();
+    gen_id.clear();
+    gen_status.clear();
+    gen_p4.clear();
+    event = 0;
+    lumi = 0;
+    run = 0;
     nBjets = 0;
-    ht = 0; 
-    if (tas::hyp_ll_id().size() < 1) continue;
-  
-    //Choose Best Hypothesis
-    int index = chooseBestHyp();
-    if (index < 0) continue;
-  
-    //Progress bar
-    CMS2::progress(evt, nEventsTree); 
 
-    //if real data, check to see if on good run list
-    if (isData == true && goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) == false) continue;
+    //number of events in current file tree
+    unsigned int nEventsTree = tree->GetEntries(); 
 
-  
-    //Event Stuff
-    scale1fb = tas::evt_scale1fb();   
-    event = tas::evt_event();
-    lumi = tas::evt_lumiBlock();
-    run = tas::evt_run();
+    //Loop over all events in tree of current file
+    for(unsigned int evt = 0; evt < (allEvents == -1 ? nEventsTree : allEvents) ; evt++){
 
-     //Check for duplicates
-     if (isData == true){
-               duplicate_removal::DorkyEventIdentifier id(run, event, lumi); 
-               if (duplicate_removal::is_duplicate(id)) continue; 
-    }
-
-
-    //Filename
-    //filename = currentFile->GetTitle(); 
-
-    //Met Stuff
-    met = tas::evt_pfmet();         
-                                         
-    //Lepton Stuff
-    lep1_id = tas::hyp_ll_id().at(index);
-    lep2_id = tas::hyp_lt_id().at(index);
-    lep1_idx = tas::hyp_ll_index().at(index);
-    lep2_idx = tas::hyp_lt_index().at(index);
-
-    if (isData == false) {
-    lep1_mc_id = abs(lep1_id) == 11 ? tas::els_mc_id().at(lep1_idx) : tas::mus_mc_id().at(lep1_idx);
-    lep2_mc_id = abs(lep2_id) == 11 ? tas::els_mc_id().at(lep2_idx) : tas::mus_mc_id().at(lep2_idx);
-    hyp_type = tas::hyp_type().at(index); } 
-     else {lep1_mc_id = 1; lep2_mc_id = 1;}
-
-    lep1_iso = abs(lep1_id) == 11 ? samesign::electronIsolationPF2012(lep1_idx) : muonIsoValuePF2012_deltaBeta(lep1_idx);
-    lep2_iso = abs(lep2_id) == 11 ? samesign::electronIsolationPF2012(lep2_idx) : muonIsoValuePF2012_deltaBeta(lep2_idx);
-    lep1_passes_id = false;  
-    lep2_passes_id = false;
-    lep1_p4 = tas::hyp_ll_p4().at(index);
-    lep2_p4 = tas::hyp_lt_p4().at(index);
-
-  if (isData == false){  //Gen Stuff
-    for (unsigned int gidx = 0; gidx < tas::genps_p4().size(); gidx++){
-      int status = tas::genps_status().at(gidx);
-      int id = tas::genps_id().at(gidx);
-      LorentzVector p4 = tas::genps_p4().at(gidx);
-
-      gen_status.push_back(status);
-      gen_id.push_back(id);
-      gen_p4.push_back(p4);
-     }
-   } else {
-           int status = 1; int id = 1; LorentzVector p4;
-           gen_status.push_back(status);             
-           gen_id.push_back(id);
-           gen_p4.push_back(p4);
-   }
-
-    //Jet stuff
-    for(unsigned int j = 0; j < tas::pfjets_p4().size(); j++){
-
-      LorentzVector jet = tas::pfjets_p4().at(j);
-      if (jet.pt() <= 30) continue; 
-      if (abs(jet.eta())>=3 ) continue;
-      if (ROOT::Math::VectorUtil::DeltaR(lep1_p4, jet) < 0.1) continue; 
-      if (ROOT::Math::VectorUtil::DeltaR(lep2_p4, jet) < 0.1) continue;
-
-      njets++;
-      ht += jet.pt();
-      jets_p4.push_back(jet);
-      float disc = tas::pfjets_combinedSecondaryVertexBJetTag().at(j);
-      jets_disc.push_back(disc);
-
-      if (disc > 0.679) nBjets++;
-
-    }
+      numEventsDone++;
+      cms2.GetEntry(evt);
+ 
+ 
+      //Initialize
+      njets = 0;
+      nBjets = 0;
+      ht = 0; 
+      if (tas::hyp_ll_id().size() < 1) continue;
     
-      tree_new->Fill();  
-  }
+      temp++;
 
+      //Choose Best Hypothesis
+      int index = chooseBestHyp();
+      if (index < 0) continue;
+    
+      //Progress bar
+      CMS2::progress(nEventsDone, chain->GetEntries()); 
+
+      //if real data, check to see if on good run list
+      if (isData == true && goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) == false) continue;
+
+    
+      //Event Stuff
+      scale1fb = tas::evt_scale1fb();   
+      event = tas::evt_event();
+      lumi = tas::evt_lumiBlock();
+      run = tas::evt_run();
+
+      //Check for duplicates
+      if (isData == true){
+        duplicate_removal::DorkyEventIdentifier id(run, event, lumi); 
+        if (duplicate_removal::is_duplicate(id)) continue; 
+      }
+
+      //Filename
+      filename = currentFile->GetTitle(); 
+
+      //Met Stuff
+      met = tas::evt_pfmet();         
+                                           
+      //Lepton Stuff
+      lep1_id = tas::hyp_ll_id().at(index);
+      lep2_id = tas::hyp_lt_id().at(index);
+      lep1_idx = tas::hyp_ll_index().at(index);
+      lep2_idx = tas::hyp_lt_index().at(index);
+
+      if (isData == false) {
+        lep1_mc_id = abs(lep1_id) == 11 ? tas::els_mc_id().at(lep1_idx) : tas::mus_mc_id().at(lep1_idx);
+        lep2_mc_id = abs(lep2_id) == 11 ? tas::els_mc_id().at(lep2_idx) : tas::mus_mc_id().at(lep2_idx);
+        hyp_type = tas::hyp_type().at(index);
+      } 
+      else {lep1_mc_id = 1; lep2_mc_id = 1;}
+
+      lep1_iso = abs(lep1_id) == 11 ? samesign::electronIsolationPF2012(lep1_idx) : muonIsoValuePF2012_deltaBeta(lep1_idx);
+      lep2_iso = abs(lep2_id) == 11 ? samesign::electronIsolationPF2012(lep2_idx) : muonIsoValuePF2012_deltaBeta(lep2_idx);
+      lep1_passes_id = false;  
+      lep2_passes_id = false;
+      lep1_p4 = tas::hyp_ll_p4().at(index);
+      lep2_p4 = tas::hyp_lt_p4().at(index);
+
+      if (isData == false){  //Gen Stuff
+        for (unsigned int gidx = 0; gidx < tas::genps_p4().size(); gidx++){
+          int status = tas::genps_status().at(gidx);
+          int id = tas::genps_id().at(gidx);
+          LorentzVector p4 = tas::genps_p4().at(gidx);
+
+          gen_status.push_back(status);
+          gen_id.push_back(id);
+          gen_p4.push_back(p4);
+        }
+      }
+      else {
+        int status = 1; int id = 1; LorentzVector p4;
+        gen_status.push_back(status);             
+        gen_id.push_back(id);
+        gen_p4.push_back(p4);
+      }
+
+      //Jet stuff
+      for(unsigned int j = 0; j < tas::pfjets_p4().size(); j++){
+
+        LorentzVector jet = tas::pfjets_p4().at(j);
+        if (jet.pt() <= 30) continue; 
+        if (abs(jet.eta())>=3 ) continue;
+        if (ROOT::Math::VectorUtil::DeltaR(lep1_p4, jet) < 0.1) continue; 
+        if (ROOT::Math::VectorUtil::DeltaR(lep2_p4, jet) < 0.1) continue;
+
+        njets++;
+        ht += jet.pt();
+        jets_p4.push_back(jet);
+        float disc = tas::pfjets_combinedSecondaryVertexBJetTag().at(j);
+        jets_disc.push_back(disc);
+
+        if (disc > 0.679) nBjets++;
+
+      }
+         
+        //Fill tree after each event
+        tree_new->Fill();  
+
+  }
+  file->Close();
+  delete file;
 }
 
   file_new->cd();
   tree_new->Write();
+  file_new->Close();
 
- 
+  cout << "temp: "<<temp << endl;
+  
   return 0;
 
 }
