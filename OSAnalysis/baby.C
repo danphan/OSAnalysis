@@ -14,7 +14,8 @@
 using namespace std;
 
 //Parameters
-//char* input_filename  = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/merged_ntuple_100.root";
+
+char* path = "/nfs-3/userdata/danphan/";
 char* outputName = "baby";
 char* treeName = "babyTree";
 
@@ -146,7 +147,7 @@ int baby(){
 
  //list of root files
   TChain *chain = new TChain("Events"); 
-  chain->Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleMu_Run2012A-recover-06Aug2012-v1_AOD/merged/*.root");
+  chain->Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleMu_Run2012B-13Jul2012-v4_AOD/merged/*.root");
 
 
   set_goodrun_file("/home/users/jgran/analysis/sswh/fakes/json/final_19p49fb_cms2.txt");
@@ -161,10 +162,8 @@ int baby(){
   int temp = 0;
 
   //Declare TTree and TFile that will be filled with data
-  TFile *file_new = new TFile(Form("%s.root", outputName), "RECREATE");
+  TFile *file_new = new TFile(Form("%s%s.root", path,outputName), "RECREATE");
   TTree *tree_new = new TTree("tree", Form("%s",treeName));  
-
-  int numEventsDone = 0;
 
   //initializing variables
   float met = 0;
@@ -227,8 +226,6 @@ int baby(){
   //looping over chain 
   while ((currentFile = (TFile*)fileIter.Next())) {
 
-    // TFile *file = new TFile(Form("%s",input_filename)); 
-
     //open up file that has data in it 
     if (nEventsDone >= nEventsToDo) continue;
     TFile *file = new TFile(currentFile->GetTitle());
@@ -239,43 +236,14 @@ int baby(){
 
     cout << currentFile->GetTitle() << endl; 
  
-    //initializing variables again for each file we loop over
-    met = 0;
-    njets = 0;
-    ht = 0;
-    scale1fb = 0; 
-    lep1_id = 0;
-    lep2_id = 0;
-    lep1_idx = 0; 
-    lep2_idx = 0; 
-    lep1_mc_id = 0;
-    lep2_mc_id = 0;
-    hyp_type = -1; 
-    lep1_iso = -1; 
-    lep2_iso = -1;
-    lep1_passes_id = false; 
-    lep2_passes_id = false; 
-    // lep1_p4;  //not sure how to reset lorentzvectors to zero, but this doesn't really matter too much i think
-    // lep2_p4;
-    jets_p4.clear();
-    jets_disc.clear();
-    gen_id.clear();
-    gen_status.clear();
-    gen_p4.clear();
-    event = 0;
-    lumi = 0;
-    run = 0;
-    nBjets = 0;
-
     //number of events in current file tree
     unsigned int nEventsTree = tree->GetEntries(); 
 
     //Loop over all events in tree of current file
     for(unsigned int evt = 0; evt < (allEvents == -1 ? nEventsTree : allEvents) ; evt++){
 
-      numEventsDone++;
+      nEventsDone++;
       cms2.GetEntry(evt);
- 
  
       //Initialize
       njets = 0;
@@ -374,6 +342,36 @@ int baby(){
          
       //Fill tree after each event
       tree_new->Fill();  
+
+      //clear variables for next event
+      jets_p4.clear();
+      jets_disc.clear();
+      gen_id.clear();
+      gen_status.clear();
+      gen_p4.clear();
+
+      //initializing variables again for each event we loop over
+      met = 0;
+      njets = 0;
+      ht = 0;
+      scale1fb = 0; 
+      lep1_id = 0;
+      lep2_id = 0;
+      lep1_idx = 0; 
+      lep2_idx = 0; 
+      lep1_mc_id = 0;
+      lep2_mc_id = 0;
+      hyp_type = -1; 
+      lep1_iso = -1; 
+      lep2_iso = -1;
+      lep1_passes_id = false; 
+      lep2_passes_id = false; 
+      // lep1_p4;  //not sure how to reset lorentzvectors to zero, but this whole thing doesn't really matter too much i think
+      // lep2_p4;
+      event = 0;
+      lumi = 0;
+      run = 0;
+      nBjets = 0;
 
     }
   
