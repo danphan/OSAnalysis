@@ -18,7 +18,7 @@ int allplot(){
 
   //lumi and corr for these events
   lumi = 5.2; 
-  float corr = 5872648/40000;
+  float corr = 1; //running over all files now
 
  
   TH1F *hist = new TH1F("hist", "met", 50, 0, 70);
