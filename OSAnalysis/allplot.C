@@ -17,7 +17,7 @@ int allplot(){
   TTree *tree = (TTree*)file->Get("tree");
 
   //lumi and corr for these events
-
+  lumi = 5.2; 
   float corr = 5872648/40000;
 
  
@@ -48,18 +48,18 @@ int allplot(){
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
-    hist_pt->Fill(lep1.pt(), scale1fb()*lumi()*corr);   
-    hist_pt->Fill(lep2.pt(), scale1fb()*lumi()*corr);
-    hist_eta->Fill(lep1.eta(), scale1fb()*lumi()*corr);
-    hist_eta->Fill(lep2.eta(), scale1fb()*lumi()*corr);
-    hist_phi->Fill(lep1.phi(), scale1fb()*lumi()*corr);
-    hist_phi->Fill(lep2.phi(), scale1fb()*lumi()*corr);
-    hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi()*corr);
-    hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi()*corr);
-    hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi()*corr);
-    hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi()*corr); 
-    hist->Fill(met(), scale1fb()*lumi()*corr);
-    hist_numjet->Fill(njets(), scale1fb()*lumi()*corr);
+    hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
+    hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
+    hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
+    hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
+    hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
+    hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
+    hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
+    hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
+    hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
+    hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
+    hist->Fill(met(), scale1fb()*lumi*corr);
+    hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
   }
  
