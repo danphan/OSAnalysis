@@ -17,7 +17,7 @@ int allplot(){
   TTree *tree = (TTree*)file->Get("tree");
 
   //lumi and corr for these events
-  lumi = 5.2; 
+  float lumi = 5.2; 
   float corr = 1; //running over all files now
 
  
