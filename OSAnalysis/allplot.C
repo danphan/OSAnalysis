@@ -11,33 +11,74 @@ using namespace Jack;
 
 int allplot(){
  
-  TFile *file = new TFile("baby.root");
-
-
-  TTree *tree = (TTree*)file->Get("tree");
+  TFile *file_data = new TFile("/nfs-3/userdata/danphan/baby_data.root");
+  TTree *tree_data = (TTree*)file_data->Get("tree");
 
   //lumi and corr for these events
-  lumi = 5.2; 
+  float lumi = 5.2; 
   float corr = 1; //running over all files now
 
+  //filling data hists
+  TH1F *data_hist = new TH1F("data_hist", "met", 50, 0, 70);
+  TH1F *data_hist_pt = new TH1F("data_hist_pt", "p_{T}", 50, 0, 100);
+  TH1F *data_hist_eta = new TH1F("data_hist_eta", "eta", 50, -2.5, 2.5);
+  TH1F *data_hist_phi = new TH1F("data_hist_phi","phi", 50, -3.5, 3.5);
+  TH1F *data_hist_pt1 = new TH1F("data_hist_ptZ", "p_{T} Z", 50, 0, 150);  
+  TH1F *data_hist_eta1 = new TH1F("data_hist_etaZ", "eta Z", 50, -6, 6);
+  TH1F *data_hist_mass1 =  new TH1F("data_hist_mass","mass Z",50,0,150);
+  TH1F *data_hist_phi1 = new TH1F("data_hist_phiZ","phi Z", 50, -3.5, 3.5);
+  TH1F *data_hist_numjet = new TH1F("data_hist_numjet","num jets",8,0,8);
+
+  object.Init(tree_data);
+
+  unsigned int nEventsTreeData = tree_data->GetEntriesFast();
+
+  for(unsigned int evt = 0; evt < nEventsTreeData; evt++) { 
  
-  TH1F *hist = new TH1F("hist", "met", 50, 0, 70);
-  TH1F *hist_pt = new TH1F("hist_pt", "p_{T}", 50, 0, 100);
-  TH1F *hist_eta = new TH1F("hist_eta", "eta", 50, -2.5, 2.5);
-  TH1F *hist_phi = new TH1F("hist_phi","phi", 50, -3.5, 3.5);
-  TH1F *hist_pt1 = new TH1F("hist_ptZ", "p_{T} Z", 50, 0, 150);  
-  TH1F *hist_eta1 = new TH1F("hist_etaZ", "eta Z", 50, -6, 6);
-  TH1F *hist_mass1 =  new TH1F("hist_mass","mass Z",50,0,150);
-  TH1F *hist_phi1 = new TH1F("hist_phiZ","phi Z", 50, -3.5, 3.5);
-  TH1F *hist_numjet = new TH1F("hist_numjet","num jets",8,0,8);
-
-  cout << tree->GetEntries() << endl;
+    object.GetEntry(evt);
+   
+    //define leptons
+    LorentzVector lep1 = lep1_p4(); 
+    LorentzVector lep2 = lep2_p4(); 
   
-  object.Init(tree);
+    LorentzVector z_cand = lep1 + lep2;
 
-  unsigned int nEventsTree = tree->GetEntriesFast();
+    //fill plots with information about dileptons
+    data_hist_pt->Fill(lep1.pt());   
+    data_hist_pt->Fill(lep2.pt());
+    data_hist_eta->Fill(lep1.eta());
+    data_hist_eta->Fill(lep2.eta());
+    data_hist_phi->Fill(lep1.phi());
+    data_hist_phi->Fill(lep2.phi());
+    data_hist_pt1->Fill(z_cand.pt());
+    data_hist_eta1->Fill(z_cand.eta());
+    data_hist_phi1->Fill(z_cand.phi());
+    data_hist_mass1->Fill(z_cand.mass()); 
+    data_hist->Fill(met());
+    data_hist_numjet->Fill(njets());
+    
+  }
 
-  for(unsigned int evt = 0; evt < nEventsTree; evt++) { 
+
+  //filling MC hists
+  TFile *file_MC = new TFile("/nfs-3/userdata/danphan/baby_MC_all.root");
+  TTree *tree_MC = (TTree*)file_MC->Get("tree");
+ 
+  TH1F *MC_hist = new TH1F("data_hist", "met", 50, 0, 70);
+  TH1F *MC_hist_pt = new TH1F("data_hist_pt", "p_{T}", 50, 0, 100);
+  TH1F *MC_hist_eta = new TH1F("data_hist_eta", "eta", 50, -2.5, 2.5);
+  TH1F *MC_hist_phi = new TH1F("data_hist_phi","phi", 50, -3.5, 3.5);
+  TH1F *MC_hist_pt1 = new TH1F("data_hist_ptZ", "p_{T} Z", 50, 0, 150);  
+  TH1F *MC_hist_eta1 = new TH1F("data_hist_etaZ", "eta Z", 50, -6, 6);
+  TH1F *MC_hist_mass1 =  new TH1F("data_hist_mass","mass Z",50,0,150);
+  TH1F *MC_hist_phi1 = new TH1F("data_hist_phiZ","phi Z", 50, -3.5, 3.5);
+  TH1F *MC_hist_numjet = new TH1F("data_hist_numjet","num jets",8,0,8);
+
+  object.Init(tree_MC);
+
+  unsigned int nEventsTreeMC = tree_MC->GetEntriesFast();
+
+  for(unsigned int evt = 0; evt < nEventsTreeMC; evt++) { 
  
     object.GetEntry(evt);
    
@@ -48,64 +89,88 @@ int allplot(){
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
-    hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
-    hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
-    hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
-    hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
-    hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
-    hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
-    hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
-    hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
-    hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
-    hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
-    hist->Fill(met(), scale1fb()*lumi*corr);
-    hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
+    MC_hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
+    MC_hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
+    MC_hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
+    MC_hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
+    MC_hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
+    MC_hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
+    MC_hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
+    MC_hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
+    MC_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
+    MC_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
+    MC_hist->Fill(met(), scale1fb()*lumi*corr);
+    MC_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
   }
+
+
+
  
   //using dataMCplotMaker to plot the hists made 
-  
-  TH1F* null = new TH1F("","",1,0,1);
  
+  //data(not used here)
+//  TH1F* null = new TH1F("","",1,0,1);
+ 
+  //backgrounds(here we put both data and MC for comparison)
   vector <TH1F*> vec1_hist,vec2_hist,vec3_hist,vec4_hist,vec5_hist,vec6_hist,vec7_hist,vec_hist,vec8_hist;
 
+  //names of all backgrounds
   vector <char*> vec1_titles,vec2_titles,vec3_titles,vec4_titles,vec5_titles,vec6_titles,vec7_titles,vec_titles,vec8_titles;
  
-  vec_hist.push_back(hist); 
+ // vec_hist.push_back(data_hist); 
+  vec_hist.push_back(MC_hist); 
   vec_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  dataMCplotMaker (null,vec_hist,vec_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--legendRight -0.05 --isLinear --outputName met --xAxisLabel MET");
+  vec_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist,vec_hist,vec_titles,"Data MC Comparison: MET","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --legendRight 1 --isLinear --outputName met --xAxisLabel MET");
  
-  vec1_hist.push_back(hist_pt);
+ // vec1_hist.push_back(data_hist_pt);
+  vec1_hist.push_back(MC_hist_pt);
   vec1_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  dataMCplotMaker (null,vec1_hist,vec1_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--legendRight -0.05 --isLinear --outputName lep_pt --xAxisLabel pt");
+  vec1_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_pt,vec1_hist,vec1_titles,"Data MC Comparison: pT","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --legendRight 0 --isLinear --outputName lep_pt --xAxisLabel pT");
  
-  vec2_hist.push_back(hist_eta);
+ // vec2_hist.push_back(data_hist_eta);
+  vec2_hist.push_back(MC_hist_eta);
   vec2_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  dataMCplotMaker (null,vec2_hist,vec2_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --noXaxisUnit --outputName lep_eta --xAxisLabel eta");
+  vec2_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_eta,vec2_hist,vec2_titles,"Data MC Comparison: {Eta}","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --outputName lep_eta --xAxisLabel #eta");
 
-  vec3_hist.push_back(hist_phi);
+ // vec3_hist.push_back(data_hist_phi);
+  vec3_hist.push_back(MC_hist_phi);
   vec3_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  dataMCplotMaker (null,vec3_hist,vec3_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --noXaxisUnit --outputName lep_phi --xAxisLabel phi");
+  vec3_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_phi,vec3_hist,vec3_titles,"Data MC Comparison: {#phi}","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --outputName lep_phi --xAxisLabel #phi");
 
-  vec4_hist.push_back(hist_pt1);
+ // vec4_hist.push_back(data_hist_pt1);
+  vec4_hist.push_back(MC_hist_pt1);
   vec4_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  dataMCplotMaker (null,vec4_hist,vec4_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --outputName Z_pt --xAxisLabel Z_pt");
+  vec4_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_pt1,vec4_hist,vec4_titles,"Data MC Comparison: Z pT","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --outputName Z_pt --xAxisLabel Z pT");
 
-  vec5_hist.push_back(hist_eta1);
+ // vec5_hist.push_back(data_hist_eta1);
+  vec5_hist.push_back(MC_hist_eta1);
   vec5_titles.push_back("Z #rightarrow l^{+} l^{-}"); 
-  dataMCplotMaker (null,vec5_hist,vec5_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --noXaxisUnit  --outputName Z_eta --xAxisLabel Z_eta"); 
+  vec5_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_eta1,vec5_hist,vec5_titles,"Data MC Comparison: Z #eta","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta"); 
 
-  vec6_hist.push_back(hist_phi1);
+ // vec6_hist.push_back(data_hist_phi1);
+  vec6_hist.push_back(MC_hist_phi1);
   vec6_titles.push_back("Z #rightarrow l^{+} l^{-}");   
-  dataMCplotMaker (null,vec6_hist,vec6_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05  --noXaxisUnit --outputName Z_phi --xAxisLabel Z_phi"); 
+  vec6_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_phi1,vec6_hist,vec6_titles,"Data MC Comparison: Z #phi","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
 
-  vec7_hist.push_back(hist_mass1);
+ // vec7_hist.push_back(data_hist_mass1);
+  vec7_hist.push_back(MC_hist_mass1);
   vec7_titles.push_back("Z #rightarrow l^{+} l^{-}");  
-  dataMCplotMaker (null,vec7_hist,vec7_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05  --outputName Z_mass --xAxisLabel Z_mass"); 
+  vec7_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_mass1,vec7_hist,vec7_titles,"Data MC Comparison: Z mass","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0  --outputName Z_mass --xAxisLabel Z mass"); 
 
-  vec8_hist.push_back(hist_numjet);
+//  vec8_hist.push_back(data_hist_numjet);
+  vec8_hist.push_back(MC_hist_numjet);
   vec8_titles.push_back("Z #rightarrow l^{+} l^{-}");   
-  dataMCplotMaker (null,vec8_hist,vec8_titles,"RUN 1 MC Exercise","#geq 1 OS,SF dilepton pairs","--isLinear --legendRight -0.05 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
+  vec8_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_numjet,vec8_hist,vec8_titles,"Data MC Comparison: Jet Multiplicity","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
 
   return 0;
 }
