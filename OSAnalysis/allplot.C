@@ -36,7 +36,13 @@ int allplot(){
   for(unsigned int evt = 0; evt < nEventsTreeData; evt++) { 
  
     object.GetEntry(evt);
-   
+    
+    //Check for duplicates 
+    if (isData == true){
+        duplicate_removal::DorkyEventIdentifier id(run, event, lumi);
+        if (duplicate_removal::is_duplicate(id)) continue;
+      }
+
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
