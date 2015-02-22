@@ -11,12 +11,12 @@
 #include "/home/users/cgeorge/old_stuff/analysis/SS/EXTERNAL/dorky.h"
 #include "/home/users/yanjunhe/Tools/goodrun.h"
 
+#include "/home/users/danphan/OSAnalysis/baby.h"
+
 using namespace std;
 
 //Parameters
-
 char* path = "/nfs-3/userdata/danphan/";
-char* outputName = "baby";
 char* treeName = "babyTree";
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
@@ -24,10 +24,9 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 //switch to choose whether to loop through all events or not
 int allEvents = -1; //Set allEvents to whatever you want
 
-int chooseBestHyp(){
+int chooseBestHyp(evt_type type){
 
   //Vector for passing hyps
-  vector <int> goodhyp;
   vector <int> pass1;
   vector <int> pass2;
 
@@ -51,30 +50,19 @@ int chooseBestHyp(){
     if (abs(lep1.eta()) >= 2.4) continue;
     if (abs(lep2.eta()) >= 2.4) continue; 
 
+    //throw away leptons that don't pass ID and iso
+    bool lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_ll_index().at(i)) : muonId(tas::hyp_ll_index().at(i), ZMet2012_v1); 
+    bool lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_lt_index().at(i)) : muonId(tas::hyp_lt_index().at(i), ZMet2012_v1); 
+
+    if (!(lep1_passes_id && lep2_passes_id)) continue;
+
     //If we get here, it is a good hyp
-    goodhyp.push_back(i);   
-
-  }
-  
-  //Loop over good hyps 
-  for (unsigned int j = 0; j < goodhyp.size(); j++){ 
-    int index = goodhyp[j];  
-  
-    int id1 = tas::hyp_ll_id().at(index);  
-    int id2 = tas::hyp_lt_id().at(index);
-
-    bool lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_ll_index().at(index)) : muonId(tas::hyp_ll_index().at(index), ZMet2012_v1); 
-    bool lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_lt_index().at(index)) : muonId(tas::hyp_lt_index().at(index), ZMet2012_v1); 
- 
-    if (lep1_passes_id && lep2_passes_id) pass1.push_back(goodhyp.at(j));
+    pass1.push_back(i);   
 
   }
 
   //If there is 1 hyp in pass1 vector, then choose that one  
   if (pass1.size() == 1) return pass1[0];
-
-  //N.B. NOW REDEFINE PASS1 TO BE VECTOR OF ALL GOOD HYPS STILL BEING CONSIDERED
-  if (pass1.size() == 0)  pass1 = goodhyp;
 
   //If pass1 empty, return -1;
   if (pass1.size() < 1) return -1;
@@ -82,35 +70,74 @@ int chooseBestHyp(){
   //If pass1 has just 1 thing, return it
   if (pass1.size() == 1) return pass1[0];
 
-  //If pass1 has 2+ things, need to pick. Pass2 is for dimuon events
-  if (pass1.size() > 1){ 
-    for (unsigned int k = 0; k < pass1.size(); k++){
-      int index2 = pass1[k];
-      int id1 = tas::hyp_ll_id().at(index2);
-      int id2 = tas::hyp_lt_id().at(index2);
-      if  (abs(id1) == 13 && abs(id2) == 13)
-      pass2.push_back(index2);
+  //double muon data sets
+  if (type == mm) {
+
+    //If pass1 has 2+ things, need to pick. Pass2 is for dimuon events
+    if (pass1.size() > 1){ 
+      for (unsigned int k = 0; k < pass1.size(); k++){
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if  (abs(id1) == 13 && abs(id2) == 13)
+        pass2.push_back(index2);
+      }
+    }
+     
+    //If there are also no dimuon events, go for dielectron 
+    if (pass2.size() == 0){
+      for (unsigned int k = 0; k < pass1.size(); k++) {       
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if  (abs(id1) == 11 && abs(id2) == 11) pass2.push_back(index2);
+      }   
+    }
+
+    //If there are no dielectron events, go for emu events
+    if (pass2.size() == 0){
+      for (unsigned int k = 0; k < pass1.size(); k++) {       
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) pass2.push_back(index2);
+      }
     }
   }
-   
-  //If there are no dimuon events, go for emu events
-  if (pass2.size() == 0){
-    for (unsigned int k = 0; k < pass1.size(); k++) {       
-      int index2 = pass1[k];
-      int id1 = tas::hyp_ll_id().at(index2);
-      int id2 = tas::hyp_lt_id().at(index2);
-      if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) pass2.push_back(index2);
+
+  //double electron data sets
+  if (type == ee) {
+
+    //If pass1 has 2+ things, need to pick. Pass2 is for dielectron events
+    if (pass1.size() > 1){ 
+      for (unsigned int k = 0; k < pass1.size(); k++){
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if  (abs(id1) == 11 && abs(id2) == 11)
+        pass2.push_back(index2);
+      }
     }
-  }
-  
-  //If there are also no emu events, for for dielectron 
-  if (pass2.size() == 0){
-    for (unsigned int k = 0; k < pass1.size(); k++) {       
-      int index2 = pass1[k];
-      int id1 = tas::hyp_ll_id().at(index2);
-      int id2 = tas::hyp_lt_id().at(index2);
-      if  (abs(id1) == 11 && abs(id2) == 11) pass2.push_back(index2);
-    }   
+     
+    //If there are also no dielectron events, go for dimuon 
+    if (pass2.size() == 0){
+      for (unsigned int k = 0; k < pass1.size(); k++) {       
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if  (abs(id1) == 13 && abs(id2) == 13) pass2.push_back(index2);
+      }   
+    }
+
+    //If there are no dimuon events, go for emu events
+    if (pass2.size() == 0){
+      for (unsigned int k = 0; k < pass1.size(); k++) {       
+        int index2 = pass1[k];
+        int id1 = tas::hyp_ll_id().at(index2);
+        int id2 = tas::hyp_lt_id().at(index2);
+        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) pass2.push_back(index2);
+      }
+    }
   }
 
   //Pass 2 now has all hyps of best class.  If only one entry, done
@@ -136,19 +163,12 @@ int chooseBestHyp(){
   
   return index4;
 
-  goodhyp.clear();
   pass1.clear();
   pass2.clear();
 
 }
 
-
-int baby(){
-
- //list of root files
-  TChain *chain = new TChain("Events"); 
-  chain->Add("/hadoop/cms/store/group/snt/papers2012/Data2012/CMSSW_5_3_2_patch4_V05-03-24/DoubleMu_Run2012B-13Jul2012-v4_AOD/merged/*.root");
-
+int baby(TChain *chain, char* outputName, evt_type type){
 
   set_goodrun_file("/home/users/jgran/analysis/sswh/fakes/json/final_19p49fb_cms2.txt");
 
@@ -157,9 +177,6 @@ int baby(){
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
   TFile *currentFile = 0;
-
-
-  int temp = 0;
 
   //Declare TTree and TFile that will be filled with data
   TFile *file_new = new TFile(Form("%s%s.root", path,outputName), "RECREATE");
@@ -251,10 +268,8 @@ int baby(){
       ht = 0; 
       if (tas::hyp_ll_id().size() < 1) continue;
     
-      temp++;
-
       //Choose Best Hypothesis
-      int index = chooseBestHyp();
+      int index = chooseBestHyp(type);
       if (index < 0) continue;
     
       //Progress bar
@@ -385,8 +400,6 @@ int baby(){
   tree_new->Write();
   file_new->Close();
 
-  cout << "temp: "<<temp << endl;
-  
   return 0;
 
 }

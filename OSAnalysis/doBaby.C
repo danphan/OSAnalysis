@@ -1,3 +1,4 @@
+
 {
   gROOT->ProcessLine(".L /home/users/cgeorge/software/dataMCplotMaker/dataMCplotMaker.cc+");
   gSystem->Load("/home/users/cgeorge/CORE/CORE-run1/libCMS2NtupleMacrosCORE.so");
@@ -6,5 +7,7 @@
   gROOT->ProcessLine(".L /home/users/cgeorge/old_stuff/analysis/SS/Tools/goodrun.cc+");
 
   gROOT->ProcessLine(".L baby.C+");
-  gROOT->ProcessLine("baby()");
+  gROOT->ProcessLine(".L callsBaby.C+");
+
+  gROOT->ProcessLine("callsBaby()");
 }
