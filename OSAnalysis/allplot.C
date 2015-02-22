@@ -36,7 +36,13 @@ int allplot(){
   for(unsigned int evt = 0; evt < nEventsTreeData; evt++) { 
  
     object.GetEntry(evt);
-   
+    
+    //Check for duplicates 
+    if (isData == true){
+        duplicate_removal::DorkyEventIdentifier id(run, event, lumi);
+        if (duplicate_removal::is_duplicate(id)) continue;
+      }
+
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
@@ -121,56 +127,56 @@ int allplot(){
  // vec_hist.push_back(data_hist); 
   vec_hist.push_back(MC_hist); 
   vec_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  vec_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist,vec_hist,vec_titles,"Data MC Comparison: MET","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --legendRight 1 --isLinear --outputName met --xAxisLabel MET");
+ // vec_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --outputName met --xAxisLabel MET");
  
  // vec1_hist.push_back(data_hist_pt);
   vec1_hist.push_back(MC_hist_pt);
   vec1_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  vec1_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_pt,vec1_hist,vec1_titles,"Data MC Comparison: pT","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --legendRight 0 --isLinear --outputName lep_pt --xAxisLabel pT");
+//  vec1_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_pt,vec1_hist,vec1_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --outputName lep_pt --xAxisLabel pT");
  
  // vec2_hist.push_back(data_hist_eta);
   vec2_hist.push_back(MC_hist_eta);
   vec2_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  vec2_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_eta,vec2_hist,vec2_titles,"Data MC Comparison: {Eta}","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --outputName lep_eta --xAxisLabel #eta");
+ // vec2_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_eta,vec2_hist,vec2_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --noXaxisUnit --outputName lep_eta --xAxisLabel #eta");
 
  // vec3_hist.push_back(data_hist_phi);
   vec3_hist.push_back(MC_hist_phi);
   vec3_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  vec3_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_phi,vec3_hist,vec3_titles,"Data MC Comparison: {#phi}","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --outputName lep_phi --xAxisLabel #phi");
+ // vec3_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_phi,vec3_hist,vec3_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --noXaxisUnit --outputName lep_phi --xAxisLabel #phi");
 
  // vec4_hist.push_back(data_hist_pt1);
   vec4_hist.push_back(MC_hist_pt1);
   vec4_titles.push_back("Z #rightarrow l^{+} l^{-}");
-  vec4_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_pt1,vec4_hist,vec4_titles,"Data MC Comparison: Z pT","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --outputName Z_pt --xAxisLabel Z pT");
+ // vec4_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_pt1,vec4_hist,vec4_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --outputName Z_pt --xAxisLabel Z pT");
 
  // vec5_hist.push_back(data_hist_eta1);
   vec5_hist.push_back(MC_hist_eta1);
   vec5_titles.push_back("Z #rightarrow l^{+} l^{-}"); 
-  vec5_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_eta1,vec5_hist,vec5_titles,"Data MC Comparison: Z #eta","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta"); 
+//  vec5_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_eta1,vec5_hist,vec5_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta"); 
 
  // vec6_hist.push_back(data_hist_phi1);
   vec6_hist.push_back(MC_hist_phi1);
   vec6_titles.push_back("Z #rightarrow l^{+} l^{-}");   
-  vec6_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_phi1,vec6_hist,vec6_titles,"Data MC Comparison: Z #phi","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
+ // vec6_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_phi1,vec6_hist,vec6_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
 
  // vec7_hist.push_back(data_hist_mass1);
   vec7_hist.push_back(MC_hist_mass1);
   vec7_titles.push_back("Z #rightarrow l^{+} l^{-}");  
-  vec7_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_mass1,vec7_hist,vec7_titles,"Data MC Comparison: Z mass","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0  --outputName Z_mass --xAxisLabel Z mass"); 
+ // vec7_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_mass1,vec7_hist,vec7_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear  --outputName Z_mass --xAxisLabel Z mass"); 
 
 //  vec8_hist.push_back(data_hist_numjet);
   vec8_hist.push_back(MC_hist_numjet);
   vec8_titles.push_back("Z #rightarrow l^{+} l^{-}");   
-  vec8_titles.push_back("Monte Carlo");
-  dataMCplotMaker (data_hist_numjet,vec8_hist,vec8_titles,"Data MC Comparison: Jet Multiplicity","#geq 1 OS,SF dilepton pairs","-noStack --energy 8 --lumi 5.2 --isLinear --legendRight 0 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
+ // vec8_titles.push_back("Monte Carlo");
+  dataMCplotMaker (data_hist_numjet,vec8_hist,vec8_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --isLinear  --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
 
   return 0;
 }
