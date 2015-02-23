@@ -27,6 +27,7 @@ int allEvents = -1; //Set allEvents to whatever you want
 int chooseBestHyp(evt_type type){
 
   //Vector for passing hyps
+  vector <int> goodhyp;
   vector <int> pass1;
   vector <int> pass2;
 
@@ -49,20 +50,33 @@ int chooseBestHyp(evt_type type){
     if (lep2.pt()<=20) continue; 
     if (abs(lep1.eta()) >= 2.4) continue;
     if (abs(lep2.eta()) >= 2.4) continue; 
-
+    
+    //If we get here, it is a good hyp
+    goodhyp.push_back(i);
+    
+  }
+  
+  //Loop over good hyps
+  for (unsigned int j = 0; j < goodhyp.size(); j++) {
+      
+    int index = goodhyp[j];
+    int id1 = tas::hyp_ll_id().at(index);
+    int id2 = tas::hyp_lt_id().at(index);
+  
     //throw away leptons that don't pass ID and iso
     bool lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_ll_index().at(i)) : muonId(tas::hyp_ll_index().at(i), ZMet2012_v1); 
     bool lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_lt_index().at(i)) : muonId(tas::hyp_lt_index().at(i), ZMet2012_v1); 
 
-    if (!(lep1_passes_id && lep2_passes_id)) continue;
+    if (lep1_passes_id && lep2_passes_id) 
+      pass1.push_back(goodhyp.at(j));
 
-    //If we get here, it is a good hyp
-    pass1.push_back(i);   
-
-  }
+   }
 
   //If there is 1 hyp in pass1 vector, then choose that one  
   if (pass1.size() == 1) return pass1[0];
+
+  //N.B. NOW REDEFINE PASS1 TO BE VECTOR OF ALL GOOD HYPS STILL BEING CONSIDERED
+  if (pass1.size()==0) pass1 = goodhyp;
 
   //If pass1 empty, return -1;
   if (pass1.size() < 1) return -1;
@@ -80,7 +94,7 @@ int chooseBestHyp(evt_type type){
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
         if  (abs(id1) == 13 && abs(id2) == 13)
-        pass2.push_back(index2);
+          pass2.push_back(index2);
       }
     }
      
@@ -90,7 +104,8 @@ int chooseBestHyp(evt_type type){
         int index2 = pass1[k];
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
-        if  (abs(id1) == 11 && abs(id2) == 11) pass2.push_back(index2);
+        if  (abs(id1) == 11 && abs(id2) == 11) 
+          pass2.push_back(index2);
       }   
     }
 
@@ -100,7 +115,8 @@ int chooseBestHyp(evt_type type){
         int index2 = pass1[k];
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
-        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) pass2.push_back(index2);
+        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) 
+          pass2.push_back(index2);
       }
     }
   }
@@ -115,7 +131,7 @@ int chooseBestHyp(evt_type type){
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
         if  (abs(id1) == 11 && abs(id2) == 11)
-        pass2.push_back(index2);
+          pass2.push_back(index2);
       }
     }
      
@@ -125,7 +141,8 @@ int chooseBestHyp(evt_type type){
         int index2 = pass1[k];
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
-        if  (abs(id1) == 13 && abs(id2) == 13) pass2.push_back(index2);
+        if  (abs(id1) == 13 && abs(id2) == 13) 
+          pass2.push_back(index2);
       }   
     }
 
@@ -135,7 +152,8 @@ int chooseBestHyp(evt_type type){
         int index2 = pass1[k];
         int id1 = tas::hyp_ll_id().at(index2);
         int id2 = tas::hyp_lt_id().at(index2);
-        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) )) pass2.push_back(index2);
+        if ( (abs(id1) == 11 && abs(id2) == 13) || (abs(id1) == 13 && (abs(id2) == 11) ))
+          pass2.push_back(index2);
       }
     }
   }
@@ -163,6 +181,7 @@ int chooseBestHyp(evt_type type){
   
   return index4;
 
+  goodhyp.clear();
   pass1.clear();
   pass2.clear();
 
