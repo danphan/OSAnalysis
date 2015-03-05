@@ -20,7 +20,7 @@ int callsBaby() {
   chain->Add("/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-23/*.root");
 
   char* outputName = "baby_DY1";
-  evt_type type = ee;  
+  evt_type type = mm;  
  
   baby(chain,outputName,type);
   }
@@ -32,7 +32,7 @@ int callsBaby() {
   chain->Add("/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-10To50filter_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/*.root");
 
   char* outputName = "baby_DY2";
-  evt_type type = ee;  
+  evt_type type = mm;  
  
   baby(chain,outputName,type);
   }
@@ -44,7 +44,7 @@ int callsBaby() {
   chain->Add("/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTJets_FullLeptMGDecays_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v2/V05-03-24/*.root");
 
   char* outputName = "baby_TT";
-  evt_type type = ee;  
+  evt_type type = mm;  
  
   baby(chain,outputName,type);
   }
