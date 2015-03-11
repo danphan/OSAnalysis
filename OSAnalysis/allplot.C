@@ -6,6 +6,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Math/VectorUtil.h"
+#include <iostream>
 
 using namespace Jack;
 
@@ -28,6 +29,8 @@ int allplot(){
   TH1F *data_hist_mass1 =  new TH1F("data_hist_mass","mass Z",50,0,150);
   TH1F *data_hist_phi1 = new TH1F("data_hist_phiZ","phi Z", 50, -3.5, 3.5);
   TH1F *data_hist_numjet = new TH1F("data_hist_numjet","num jets",8,0,8);
+  TH1F *data_hist_jet_pt = new TH1F("data_hist_jet_pt","jet pT",100,25,300);
+  TH1F *data_hist_jet_eta = new TH1F("data_hist_jet_eta","jet eta",50,-3.2,3.2);
 
   object.Init(tree_data);
 
@@ -37,19 +40,19 @@ int allplot(){
  
     object.GetEntry(evt);
     
-  //  //Check for duplicates 
-  //  if (isData == true){
-  //      duplicate_removal::DorkyEventIdentifier id(run, event, lumi);
-  //      if (duplicate_removal::is_duplicate(id)) continue;
-  //    }
-
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
-  
+ 
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
+
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+ 
     LorentzVector z_cand = lep1 + lep2;
 
-    //fill plots with information about dileptons
+    //fill lepton stuff
     data_hist_pt->Fill(lep1.pt());   
     data_hist_pt->Fill(lep2.pt());
     data_hist_eta->Fill(lep1.eta());
@@ -62,7 +65,12 @@ int allplot(){
     data_hist_mass1->Fill(z_cand.mass()); 
     data_hist->Fill(met());
     data_hist_numjet->Fill(njets());
-    
+
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      data_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      data_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
 
@@ -79,6 +87,8 @@ int allplot(){
   TH1F *TT_hist_mass1 =  new TH1F("TT_hist_mass","mass Z",50,0,150);
   TH1F *TT_hist_phi1 = new TH1F("TT_hist_phiZ","phi Z", 50, -3.5, 3.5);
   TH1F *TT_hist_numjet = new TH1F("TT_hist_numjet","num jets",8,0,8);
+  TH1F *TT_hist_jet_pt = new TH1F("TT_hist_jet_pt","jet pT",100,25,300);
+  TH1F *TT_hist_jet_eta = new TH1F("TT_hist_jet_eta","jet eta",50,-3.2,3.2);
 
   object.Init(tree_TT);
 
@@ -92,6 +102,12 @@ int allplot(){
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
   
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
+    
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
@@ -108,6 +124,11 @@ int allplot(){
     TT_hist->Fill(met(), scale1fb()*lumi*corr);
     TT_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      TT_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      TT_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
   //filling TTW hists
@@ -123,6 +144,8 @@ int allplot(){
   TH1F *TTW_hist_mass1 =  new TH1F("TTW_hist_mass","mass Z",50,0,150);
   TH1F *TTW_hist_phi1 = new TH1F("TTW_hist_phiZ","phi Z", 50, -3.5, 3.5);
   TH1F *TTW_hist_numjet = new TH1F("TTW_hist_numjet","num jets",8,0,8);
+  TH1F *TTW_hist_jet_pt = new TH1F("TTW_hist_jet_pt","jet pT",100,25,300);
+  TH1F *TTW_hist_jet_eta = new TH1F("TTW_hist_jet_eta","jet eta",50,-3.2,3.2);
 
   object.Init(tree_TTW);
 
@@ -135,7 +158,13 @@ int allplot(){
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
+    
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
   
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
@@ -152,6 +181,11 @@ int allplot(){
     TTW_hist->Fill(met(), scale1fb()*lumi*corr);
     TTW_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      TTW_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      TTW_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
   //filling TTZ hists
@@ -167,6 +201,8 @@ int allplot(){
   TH1F *TTZ_hist_mass1 =  new TH1F("TTZ_hist_mass","mass Z",50,0,150);
   TH1F *TTZ_hist_phi1 = new TH1F("TTZ_hist_phiZ","phi Z", 50, -3.5, 3.5);
   TH1F *TTZ_hist_numjet = new TH1F("TTZ_hist_numjet","num jets",8,0,8);
+  TH1F *TTZ_hist_jet_pt = new TH1F("TTZ_hist_jet_pt","jet pT",100,25,300);
+  TH1F *TTZ_hist_jet_eta = new TH1F("TTZ_hist_jet_eta","jet eta",50,-3.2,3.2);
 
   object.Init(tree_TTZ);
 
@@ -179,7 +215,13 @@ int allplot(){
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
+    
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
   
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
@@ -196,6 +238,11 @@ int allplot(){
     TTZ_hist->Fill(met(), scale1fb()*lumi*corr);
     TTZ_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      TTZ_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      TTZ_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
   //filling WZ hists
@@ -211,6 +258,8 @@ int allplot(){
   TH1F *WZ_hist_mass1 =  new TH1F("WZ_hist_mass","mass Z",50,0,150);
   TH1F *WZ_hist_phi1 = new TH1F("WZ_hist_phiZ","phi Z", 50, -3.5, 3.5);
   TH1F *WZ_hist_numjet = new TH1F("WZ_hist_numjet","num jets",8,0,8);
+  TH1F *WZ_hist_jet_pt = new TH1F("WZ_hist_jet_pt","jet pT",100,25,300);
+  TH1F *WZ_hist_jet_eta = new TH1F("WZ_hist_jet_eta","jet eta",50,-3.2,3.2);
 
   object.Init(tree_WZ);
 
@@ -223,7 +272,13 @@ int allplot(){
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
+    
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
   
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
@@ -240,198 +295,271 @@ int allplot(){
     WZ_hist->Fill(met(), scale1fb()*lumi*corr);
     WZ_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      WZ_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      WZ_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
-  //filling DY hists
-  TFile *file_DY = new TFile("/nfs-3/userdata/danphan/baby_DY.root");
-  TTree *tree_DY = (TTree*)file_DY->Get("tree");
+  //filling DY1 hists, M > 50
+  TFile *file_DY1 = new TFile("/nfs-3/userdata/danphan/baby_DY1.root");
+  TTree *tree_DY1 = (TTree*)file_DY1->Get("tree");
  
-  TH1F *DY_hist = new TH1F("DY_hist", "met", 50, 0, 70);
-  TH1F *DY_hist_pt = new TH1F("DY_hist_pt", "p_{T}", 50, 0, 100);
-  TH1F *DY_hist_eta = new TH1F("DY_hist_eta", "eta", 50, -2.5, 2.5);
-  TH1F *DY_hist_phi = new TH1F("DY_hist_phi","phi", 50, -3.5, 3.5);
-  TH1F *DY_hist_pt1 = new TH1F("DY_hist_ptZ", "p_{T} Z", 50, 0, 150);  
-  TH1F *DY_hist_eta1 = new TH1F("DY_hist_etaZ", "eta Z", 50, -6, 6);
-  TH1F *DY_hist_mass1 =  new TH1F("DY_hist_mass","mass Z",50,0,150);
-  TH1F *DY_hist_phi1 = new TH1F("DY_hist_phiZ","phi Z", 50, -3.5, 3.5);
-  TH1F *DY_hist_numjet = new TH1F("DY_hist_numjet","num jets",8,0,8);
+  TH1F *DY1_hist = new TH1F("DY1_hist", "met", 50, 0, 70);
+  TH1F *DY1_hist_pt = new TH1F("DY1_hist_pt", "p_{T}", 50, 0, 100);
+  TH1F *DY1_hist_eta = new TH1F("DY1_hist_eta", "eta", 50, -2.5, 2.5);
+  TH1F *DY1_hist_phi = new TH1F("DY1_hist_phi","phi", 50, -3.5, 3.5);
+  TH1F *DY1_hist_pt1 = new TH1F("DY1_hist_ptZ", "p_{T} Z", 50, 0, 150);  
+  TH1F *DY1_hist_eta1 = new TH1F("DY1_hist_etaZ", "eta Z", 50, -6, 6);
+  TH1F *DY1_hist_mass1 =  new TH1F("DY1_hist_mass","mass Z",50,0,150);
+  TH1F *DY1_hist_phi1 = new TH1F("DY1_hist_phiZ","phi Z", 50, -3.5, 3.5);
+  TH1F *DY1_hist_numjet = new TH1F("DY1_hist_numjet","num jets",8,0,8);
+  TH1F *DY1_hist_jet_pt = new TH1F("DY1_hist_jet_pt","jet pT",100,25,300);
+  TH1F *DY1_hist_jet_eta = new TH1F("DY1_hist_jet_eta","jet eta",50,-3.2,3.2);
 
-  object.Init(tree_DY);
+  object.Init(tree_DY1);
 
-  unsigned int nEventsTreeDY = tree_DY->GetEntriesFast();
+  unsigned int nEventsTreeDY1 = tree_DY1->GetEntriesFast();
 
-  for(unsigned int evt = 0; evt < nEventsTreeDY; evt++) { 
+  for(unsigned int evt = 0; evt < nEventsTreeDY1; evt++) { 
  
     object.GetEntry(evt);
    
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
+    
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
   
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
     LorentzVector z_cand = lep1 + lep2;
  
     //fill plots with information about dileptons
-    DY_hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
-    DY_hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
-    DY_hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
-    DY_hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
-    DY_hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
-    DY_hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
-    DY_hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
-    DY_hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
-    DY_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
-    DY_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
-    DY_hist->Fill(met(), scale1fb()*lumi*corr);
-    DY_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
+    DY1_hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
+    DY1_hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
+    DY1_hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
+    DY1_hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
+    DY1_hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
+    DY1_hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
+    DY1_hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
+    DY1_hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
+    DY1_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
+    DY1_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
+    DY1_hist->Fill(met(), scale1fb()*lumi*corr);
+    DY1_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      DY1_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      DY1_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
   }
 
-
-
-
+  //filling DY2 hists, 10 < M < 50
+  TFile *file_DY2 = new TFile("/nfs-3/userdata/danphan/baby_DY2.root");
+  TTree *tree_DY2 = (TTree*)file_DY2->Get("tree");
  
+  TH1F *DY2_hist = new TH1F("DY2_hist", "met", 50, 0, 70);
+  TH1F *DY2_hist_pt = new TH1F("DY2_hist_pt", "p_{T}", 50, 0, 100);
+  TH1F *DY2_hist_eta = new TH1F("DY2_hist_eta", "eta", 50, -2.5, 2.5);
+  TH1F *DY2_hist_phi = new TH1F("DY2_hist_phi","phi", 50, -3.5, 3.5);
+  TH1F *DY2_hist_pt1 = new TH1F("DY2_hist_ptZ", "p_{T} Z", 50, 0, 150);  
+  TH1F *DY2_hist_eta1 = new TH1F("DY2_hist_etaZ", "eta Z", 50, -6, 6);
+  TH1F *DY2_hist_mass1 =  new TH1F("DY2_hist_mass","mass Z",50,0,150);
+  TH1F *DY2_hist_phi1 = new TH1F("DY2_hist_phiZ","phi Z", 50, -3.5, 3.5);
+  TH1F *DY2_hist_numjet = new TH1F("DY2_hist_numjet","num jets",8,0,8);
+  TH1F *DY2_hist_jet_pt = new TH1F("DY2_hist_jet_pt","jet pT",100,25,300);
+  TH1F *DY2_hist_jet_eta = new TH1F("DY2_hist_jet_eta","jet eta",50,-3.2,3.2);
+
+  object.Init(tree_DY2);
+
+  unsigned int nEventsTreeDY2 = tree_DY2->GetEntriesFast();
+
+  for(unsigned int evt = 0; evt < nEventsTreeDY2; evt++) { 
+ 
+    object.GetEntry(evt);
+   
+    //define leptons
+    LorentzVector lep1 = lep1_p4(); 
+    LorentzVector lep2 = lep2_p4(); 
+    
+    //define jets
+    vector <LorentzVector> jets = jets_p4(); 
+  
+    //skip if leptons don't pass id/iso
+    if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
+
+    LorentzVector z_cand = lep1 + lep2;
+ 
+    //fill plots with information about dileptons
+    DY2_hist_pt->Fill(lep1.pt(), scale1fb()*lumi*corr);   
+    DY2_hist_pt->Fill(lep2.pt(), scale1fb()*lumi*corr);
+    DY2_hist_eta->Fill(lep1.eta(), scale1fb()*lumi*corr);
+    DY2_hist_eta->Fill(lep2.eta(), scale1fb()*lumi*corr);
+    DY2_hist_phi->Fill(lep1.phi(), scale1fb()*lumi*corr);
+    DY2_hist_phi->Fill(lep2.phi(), scale1fb()*lumi*corr);
+    DY2_hist_pt1->Fill(z_cand.pt(), scale1fb()*lumi*corr);
+    DY2_hist_eta1->Fill(z_cand.eta(), scale1fb()*lumi*corr);
+    DY2_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
+    DY2_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
+    DY2_hist->Fill(met(), scale1fb()*lumi*corr);
+    DY2_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
+    
+    //fill jet stuff
+    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+      DY2_hist_jet_pt->Fill((jets_p4().at(i)).pt());
+      DY2_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+    }
+  }
+
   //using dataMCplotMaker to plot the hists made 
  
   //backgrounds
-  vector <TH1F*> vec1_hist,vec2_hist,vec3_hist,vec4_hist,vec5_hist,vec6_hist,vec7_hist,vec_hist,vec8_hist;
+  vector <TH1F*> vec_hist;
 
   //names of all backgrounds
-  vector <char*> vec1_titles,vec2_titles,vec3_titles,vec4_titles,vec5_titles,vec6_titles,vec7_titles,vec_titles,vec8_titles;
+  vector <char*> vec_titles;
+
+  vec_titles.push_back("TT");
+  vec_titles.push_back("TTW");
+  vec_titles.push_back("TTZ");
+  vec_titles.push_back("WZ");
+  vec_titles.push_back("DY1");
+  vec_titles.push_back("DY2");
 
   //MET 
   vec_hist.push_back(TT_hist); 
   vec_hist.push_back(TTW_hist); 
   vec_hist.push_back(TTZ_hist); 
   vec_hist.push_back(WZ_hist); 
-  vec_hist.push_back(DY_hist);
- 
-  vec_titles.push_back("TT");
-  vec_titles.push_back("TTW");
-  vec_titles.push_back("TTZ");
-  vec_titles.push_back("WZ");
-  vec_titles.push_back("DY");
+  vec_hist.push_back(DY1_hist);
+  vec_hist.push_back(DY2_hist);
 
   dataMCplotMaker (data_hist,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName met --xAxisLabel MET --legendUp -0.05 --setMaximum 10e11" );
  
+  vec_hist.clear();
+
   //Lepton pT
-  vec1_hist.push_back(TT_hist_pt);
-  vec1_hist.push_back(TTW_hist_pt);
-  vec1_hist.push_back(TTZ_hist_pt);
-  vec1_hist.push_back(WZ_hist_pt);
-  vec1_hist.push_back(DY_hist_pt);
+  vec_hist.push_back(TT_hist_pt);
+  vec_hist.push_back(TTW_hist_pt);
+  vec_hist.push_back(TTZ_hist_pt);
+  vec_hist.push_back(WZ_hist_pt);
+  vec_hist.push_back(DY1_hist_pt);
+  vec_hist.push_back(DY2_hist_pt);
 
-  vec1_titles.push_back("TT");
-  vec1_titles.push_back("TTW");
-  vec1_titles.push_back("TTZ");
-  vec1_titles.push_back("WZ");
-  vec1_titles.push_back("DY");
-
-  dataMCplotMaker (data_hist_pt,vec1_hist,vec1_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName lep_pt --xAxisLabel pT --legendUp -0.05 --setMaximum 10e11 ");
+  dataMCplotMaker (data_hist_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName lep_pt --xAxisLabel pT --legendUp -0.05 --setMaximum 10e11 ");
  
+  vec_hist.clear();
+
   //Lepton Eta
-  vec2_hist.push_back(TT_hist_eta);
-  vec2_hist.push_back(TTW_hist_eta);
-  vec2_hist.push_back(TTZ_hist_eta);
-  vec2_hist.push_back(WZ_hist_eta);
-  vec2_hist.push_back(DY_hist_eta);
+  vec_hist.push_back(TT_hist_eta);
+  vec_hist.push_back(TTW_hist_eta);
+  vec_hist.push_back(TTZ_hist_eta);
+  vec_hist.push_back(WZ_hist_eta);
+  vec_hist.push_back(DY1_hist_eta);
+  vec_hist.push_back(DY2_hist_eta);
 
-  vec2_titles.push_back("TT");
-  vec2_titles.push_back("TTW");
-  vec2_titles.push_back("TTZ");
-  vec2_titles.push_back("WZ");
-  vec2_titles.push_back("DY");
+  dataMCplotMaker (data_hist_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" );
 
-  dataMCplotMaker (data_hist_eta,vec2_hist,vec2_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" );
+  vec_hist.clear();
 
   //Lepton Phi 
-  vec3_hist.push_back(TT_hist_phi);
-  vec3_hist.push_back(TTW_hist_phi);
-  vec3_hist.push_back(TTZ_hist_phi);
-  vec3_hist.push_back(WZ_hist_phi);
-  vec3_hist.push_back(DY_hist_phi);
+  vec_hist.push_back(TT_hist_phi);
+  vec_hist.push_back(TTW_hist_phi);
+  vec_hist.push_back(TTZ_hist_phi);
+  vec_hist.push_back(WZ_hist_phi);
+  vec_hist.push_back(DY1_hist_phi);
+  vec_hist.push_back(DY2_hist_phi);
 
-  vec3_titles.push_back("TT");
-  vec3_titles.push_back("TTW");
-  vec3_titles.push_back("TTZ");
-  vec3_titles.push_back("WZ");
-  vec3_titles.push_back("DY");
+  dataMCplotMaker (data_hist_phi,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_phi --xAxisLabel #phi --legendUp -0.05 --setMaximum 10e11 ");
 
-  dataMCplotMaker (data_hist_phi,vec3_hist,vec3_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_phi --xAxisLabel #phi --legendUp -0.05 --setMaximum 10e11 ");
+  vec_hist.clear();
 
   //Z pT
-  vec4_hist.push_back(TT_hist_pt1);
-  vec4_hist.push_back(TTW_hist_pt1);
-  vec4_hist.push_back(TTZ_hist_pt1);
-  vec4_hist.push_back(WZ_hist_pt1);
-  vec4_hist.push_back(DY_hist_pt1);
+  vec_hist.push_back(TT_hist_pt1);
+  vec_hist.push_back(TTW_hist_pt1);
+  vec_hist.push_back(TTZ_hist_pt1);
+  vec_hist.push_back(WZ_hist_pt1);
+  vec_hist.push_back(DY1_hist_pt1);
+  vec_hist.push_back(DY2_hist_pt1);
 
-  vec4_titles.push_back("TT");
-  vec4_titles.push_back("TTW");
-  vec4_titles.push_back("TTZ");
-  vec4_titles.push_back("WZ");
-  vec4_titles.push_back("DY");
+  dataMCplotMaker (data_hist_pt1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName Z_pt --xAxisLabel Z pT --legendUp -0.05 --setMaximum 10e11" );
 
-  dataMCplotMaker (data_hist_pt1,vec4_hist,vec4_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName Z_pt --xAxisLabel Z pT --legendUp -0.05 --setMaximum 10e11" );
+  vec_hist.clear();
 
   //Z Eta 
-  vec5_hist.push_back(TT_hist_eta1);
-  vec5_hist.push_back(TTW_hist_eta1);
-  vec5_hist.push_back(TTZ_hist_eta1);
-  vec5_hist.push_back(WZ_hist_eta1);
-  vec5_hist.push_back(DY_hist_eta1);
+  vec_hist.push_back(TT_hist_eta1);
+  vec_hist.push_back(TTW_hist_eta1);
+  vec_hist.push_back(TTZ_hist_eta1);
+  vec_hist.push_back(WZ_hist_eta1);
+  vec_hist.push_back(DY1_hist_eta1);
+  vec_hist.push_back(DY2_hist_eta1);
 
-  vec5_titles.push_back("TT");
-  vec5_titles.push_back("TTW");
-  vec5_titles.push_back("TTZ");
-  vec5_titles.push_back("WZ");
-  vec5_titles.push_back("DY");
+  dataMCplotMaker (data_hist_eta1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta --legendRight 0.1 --legendUp -0.05 --setMaximum 10e11 "); 
 
-  dataMCplotMaker (data_hist_eta1,vec5_hist,vec5_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta --legendRight 0.1 --legendUp -0.05 --setMaximum 10e11 "); 
+  vec_hist.clear();
 
   //Z Phi
-  vec6_hist.push_back(TT_hist_phi1);
-  vec6_hist.push_back(TTW_hist_phi1);
-  vec6_hist.push_back(TTZ_hist_phi1);
-  vec6_hist.push_back(WZ_hist_phi1);
-  vec6_hist.push_back(DY_hist_phi1);
+  vec_hist.push_back(TT_hist_phi1);
+  vec_hist.push_back(TTW_hist_phi1);
+  vec_hist.push_back(TTZ_hist_phi1);
+  vec_hist.push_back(WZ_hist_phi1);
+  vec_hist.push_back(DY1_hist_phi1);
+  vec_hist.push_back(DY2_hist_phi1);
 
-  vec6_titles.push_back("TT");
-  vec6_titles.push_back("TTW");
-  vec6_titles.push_back("TTZ");
-  vec6_titles.push_back("WZ");
-  vec6_titles.push_back("DY");
+  dataMCplotMaker (data_hist_phi1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2   --legendUp -0.05 --setMaximum 10e11  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
 
-  dataMCplotMaker (data_hist_phi1,vec6_hist,vec6_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2   --legendUp -0.05 --setMaximum 10e11  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
+  vec_hist.clear();
 
   //Z Mass 
-  vec7_hist.push_back(TT_hist_mass1);
-  vec7_hist.push_back(TTW_hist_mass1);
-  vec7_hist.push_back(TTZ_hist_mass1);
-  vec7_hist.push_back(WZ_hist_mass1);
-  vec7_hist.push_back(DY_hist_mass1);
+  vec_hist.push_back(TT_hist_mass1);
+  vec_hist.push_back(TTW_hist_mass1);
+  vec_hist.push_back(TTZ_hist_mass1);
+  vec_hist.push_back(WZ_hist_mass1);
+  vec_hist.push_back(DY1_hist_mass1);
+  vec_hist.push_back(DY2_hist_mass1);
 
-  vec7_titles.push_back("TT");
-  vec7_titles.push_back("TTW");
-  vec7_titles.push_back("TTZ");
-  vec7_titles.push_back("WZ");
-  vec7_titles.push_back("DY");
+  dataMCplotMaker (data_hist_mass1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11  --outputName Z_mass --xAxisLabel Z mass"); 
 
-  dataMCplotMaker (data_hist_mass1,vec7_hist,vec7_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11  --outputName Z_mass --xAxisLabel Z mass"); 
+  vec_hist.clear();
 
   //Num Jets 
-  vec8_hist.push_back(TT_hist_numjet);
-  vec8_hist.push_back(TTW_hist_numjet);
-  vec8_hist.push_back(TTZ_hist_numjet);
-  vec8_hist.push_back(WZ_hist_numjet);
-  vec8_hist.push_back(DY_hist_numjet);
+  vec_hist.push_back(TT_hist_numjet);
+  vec_hist.push_back(TTW_hist_numjet);
+  vec_hist.push_back(TTZ_hist_numjet);
+  vec_hist.push_back(WZ_hist_numjet);
+  vec_hist.push_back(DY1_hist_numjet);
+  vec_hist.push_back(DY2_hist_numjet);
 
-  vec8_titles.push_back("TT");
-  vec8_titles.push_back("TTW");
-  vec8_titles.push_back("TTZ");
-  vec8_titles.push_back("WZ");
-  vec8_titles.push_back("DY");
+  dataMCplotMaker (data_hist_numjet,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
 
-  dataMCplotMaker (data_hist_numjet,vec8_hist,vec8_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
+  vec_hist.clear();
+
+  //Jet Eta
+  vec_hist.push_back(TT_hist_jet_eta);
+  vec_hist.push_back(TTW_hist_jet_eta);
+  vec_hist.push_back(TTZ_hist_jet_eta);
+  vec_hist.push_back(WZ_hist_jet_eta);
+  vec_hist.push_back(DY1_hist_jet_eta);
+  vec_hist.push_back(DY2_hist_jet_eta);
+
+  dataMCplotMaker (data_hist_jet_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" );
+
+  vec_hist.clear();
+
+  //Jet pT 
+  vec_hist.push_back(TT_hist_jet_pt);
+  vec_hist.push_back(TTW_hist_jet_pt);
+  vec_hist.push_back(TTZ_hist_jet_pt);
+  vec_hist.push_back(WZ_hist_jet_pt);
+  vec_hist.push_back(DY1_hist_jet_pt);
+  vec_hist.push_back(DY2_hist_jet_pt);
+
+  dataMCplotMaker (data_hist_jet_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_pt --xAxisLabel #pT --legendUp -0.05 --setMaximum 10e11" );
 
   return 0;
 }

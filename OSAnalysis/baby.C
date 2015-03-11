@@ -62,10 +62,10 @@ int chooseBestHyp(evt_type type){
     int index = goodhyp[j];
     int id1 = tas::hyp_ll_id().at(index);
     int id2 = tas::hyp_lt_id().at(index);
-  
+ 
     //throw away leptons that don't pass ID and iso
-    bool lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_ll_index().at(i)) : muonId(tas::hyp_ll_index().at(i), ZMet2012_v1); 
-    bool lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_lt_index().at(i)) : muonId(tas::hyp_lt_index().at(i), ZMet2012_v1); 
+    bool lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_ll_index().at(index)) : muonId(tas::hyp_ll_index().at(index), ZMet2012_v1); 
+    bool lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(tas::hyp_lt_index().at(index)) : muonId(tas::hyp_lt_index().at(index), ZMet2012_v1); 
 
     if (lep1_passes_id && lep2_passes_id) 
       pass1.push_back(goodhyp.at(j));
@@ -331,8 +331,8 @@ int baby(TChain *chain, char* outputName, evt_type type){
 
       lep1_iso = abs(lep1_id) == 11 ? samesign::electronIsolationPF2012(lep1_idx) : muonIsoValuePF2012_deltaBeta(lep1_idx);
       lep2_iso = abs(lep2_id) == 11 ? samesign::electronIsolationPF2012(lep2_idx) : muonIsoValuePF2012_deltaBeta(lep2_idx);
-      lep1_passes_id = abs(id1) == 11 ? passElectronSelection_ZMet2012_v3_Iso(lep1_idx) : muonId(lep1_idx, ZMet2012_v1);  
-      lep2_passes_id = abs(id2) == 11 ? passElectronSelection_ZMet2012_v3_Iso(lep2_idx) : muonId(lep2_idx, ZMet2012_v1);
+      lep1_passes_id = abs(lep1_id) == 11 ? passElectronSelection_ZMet2012_v3_Iso(lep1_idx) : muonId(lep1_idx, ZMet2012_v1);  
+      lep2_passes_id = abs(lep2_id) == 11 ? passElectronSelection_ZMet2012_v3_Iso(lep2_idx) : muonId(lep2_idx, ZMet2012_v1);
       lep1_p4 = tas::hyp_ll_p4().at(index);
       lep2_p4 = tas::hyp_lt_p4().at(index);
 
