@@ -126,8 +126,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      TT_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      TT_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      TT_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      TT_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
@@ -183,8 +183,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      TTW_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      TTW_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      TTW_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      TTW_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
@@ -240,8 +240,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      TTZ_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      TTZ_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      TTZ_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      TTZ_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
@@ -297,8 +297,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      WZ_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      WZ_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      WZ_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      WZ_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
@@ -354,8 +354,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      DY1_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      DY1_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      DY1_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      DY1_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
@@ -411,8 +411,8 @@ int allplot(){
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
-      DY2_hist_jet_pt->Fill((jets_p4().at(i)).pt());
-      DY2_hist_jet_eta->Fill((jets_p4().at(i)).eta());
+      DY2_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
+      DY2_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
   }
 
