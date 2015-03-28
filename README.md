@@ -7,9 +7,9 @@ met ： missing transverse energy
 
 njets : number of jets
 
-ht : 
+ht : The total transverse momentum of jets
 
-scale1fb
+scale1fb : cross-section/number of events
 
 lep1_id : lepton 1's ID
 
@@ -47,9 +47,9 @@ gen_status;
 
 gen_p4
 
-event
+event : event number
 
-lumi : luminosity
+lumi : integrated luminosity
 
 run : run number
 
