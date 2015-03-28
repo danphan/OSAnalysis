@@ -1,6 +1,6 @@
 # OSAnalysis
 
-Varibles:
+VARIABLES:
 
 
 met ： missing transverse energy
