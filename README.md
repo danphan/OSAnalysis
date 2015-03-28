@@ -3,7 +3,6 @@
 variables:
 
 met ： missing transverse energy
-
 njets
 ht
 scale1fb
