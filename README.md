@@ -39,7 +39,7 @@ lep2_p4 : lepton 2's four-vector momentum
 
 jets_p4 : jets' four-vector momentum
 
-jets_disc
+jets_disc : the discriminator of jets (If it is high, we kown the jet came from a bottom quark)
 
 gen_id
 
