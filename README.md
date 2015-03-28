@@ -23,7 +23,7 @@ lep1_mc_id : The generated lepton 1 closeted to the reco particle (used to see i
 
 lep2_mc_id : The generated lepton 2 closeted to the reco particle (used to see if we correctly reconstructed lepton 2)
 
-hyp_type : hypothesis type
+hyp_type : hypothesis type (dimuons or dielectrons)
 
 lep1_iso
 
