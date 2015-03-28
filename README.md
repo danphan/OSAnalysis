@@ -53,6 +53,6 @@ lumi : integrated luminosity
 
 run : run number
 
-nBjets
+nBjets : number of jets came from botton quarks
 
 filename : file's name
