@@ -2,7 +2,7 @@
 
 ##VARIABLES:
 
-
+```
 ###2 opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
 
 (int) lep1_id : lepton 1's ID
@@ -30,9 +30,9 @@
 (LorentzVector) lep1_p4 : lepton 1's four-vector momentum
 
 (LorentzVector) lep2_p4 : lepton 2's four-vector momentum
+```
 
-
-
+```
 ###Jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
 
 (int) njets : number of jets
@@ -42,7 +42,7 @@
 (vector {LorentzVector}) jets_p4 : jets' four-vector momentum
 
 (vector {LorentzVector}) jets_disc : the discriminator of jets (If it is high, we kown the jet came from a bottom quark)
-
+```
 
 ```
 (vector {int}) gen_id : generated particle's ID
