@@ -3,7 +3,7 @@
 ##VARIABLES:
 
 
-###Two opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
+###2 opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
 
 (int) lep1_id : lepton 1's ID
 
