@@ -38,16 +38,16 @@ jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
 
 (float) ht : The total transverse momentum of jets
 
-(vector <LorentzVector>) jets_p4 : jets' four-vector momentum
+(vector {LorentzVector}) jets_p4 : jets' four-vector momentum
 
-(vector <LorentzVector>) jets_disc : the discriminator of jets (If it is high, we kown the jet came from a bottom quark)
+(vector {LorentzVector}) jets_disc : the discriminator of jets (If it is high, we kown the jet came from a bottom quark)
 
 
-(vector <int>) gen_id : generated particle's ID
+(vector {int}) gen_id : generated particle's ID
 
-(vector <int>) gen_status : generated particle's status
+(vector {int}) gen_status : generated particle's status
 
-(vector <LorentzVector>) gen_p4 : generated particle's four-vector momentum
+(vector {LorentzVector}) gen_p4 : generated particle's four-vector momentum
 
 (int) event : event number
 
