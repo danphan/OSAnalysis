@@ -1,9 +1,9 @@
 # OSAnalysis
 
-VARIABLES:
+##VARIABLES:
 
 
-Two opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
+###Two opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
 
 (int) lep1_id : lepton 1's ID
 
@@ -33,7 +33,7 @@ Two opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
 
 
 
-Jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
+###Jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
 
 (int) njets : number of jets
 
