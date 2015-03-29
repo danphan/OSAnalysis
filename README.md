@@ -32,7 +32,7 @@ lep1_p4 : lepton 1's four-vector momentum
 lep2_p4 : lepton 2's four-vector momentum
 
 
-jets with pt > 30 and abs(eta) < 3 :
+jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
 
 njets : number of jets
 
