@@ -2,9 +2,9 @@
 
 ##VARIABLES:
 
-```
-###2 opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
 
+###2 opposite sign, same-flavor leptons with pt > 20 GeV and abs(eta) < 2.4 :
+```
 (int) lep1_id : lepton 1's ID
 
 (int) lep2_id : lepton 2's ID
@@ -32,9 +32,9 @@
 (LorentzVector) lep2_p4 : lepton 2's four-vector momentum
 ```
 
-```
-###Jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
 
+###Jets with pt > 30 and abs(eta) < 3, duplicates remove, DeltaR > = 0.1 :
+```
 (int) njets : number of jets
 
 (float) ht : The total transverse momentum of jets
