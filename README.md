@@ -13,9 +13,9 @@
 
 (int) lep2_idx : lepton 2's index
 
-(int) lep1_mc_id : The generated lepton 1 closeted to the reco particle (used to see if we correctly reconstructed lepton 1)
+(int) lep1_mc_id : The generated lepton 1 closest to the reco particle (used to see if we correctly reconstructed lepton 1)
 
-(int) lep2_mc_id : The generated lepton 2 closeted to the reco particle (used to see if we correctly reconstructed lepton 2)
+(int) lep2_mc_id : The generated lepton 2 closest to the reco particle (used to see if we correctly reconstructed lepton 2)
 
 (int) hyp_type : hypothesis type (dimuons or dielectrons)
 
