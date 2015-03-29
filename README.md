@@ -45,7 +45,7 @@
 
 
 
-*(vector {int}) gen_id : generated particle's ID
+(vector {int}) gen_id : generated particle's ID
 
 (vector {int}) gen_status : generated particle's status
 
@@ -63,4 +63,4 @@
 
 (float) met : missing transverse energy
 
-(float) scale1fb : cross-section/number of events*
+(float) scale1fb : cross-section/number of events
