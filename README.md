@@ -49,7 +49,7 @@
 
 (vector {int}) gen_status : generated particle's status 
 
-( gen_status numbers meaning:
+ (gen_status numbers meaning:
 
  3 - "hard scattering" -- the actual things that collide.  In p p > ttW, that would be the t, t, and W only 
 
@@ -59,7 +59,7 @@
  1 - "final state" -- the particles that will live "forever" as far as the simulator is concerned.  These are the ones we can  detect
 
  -1 -  for "initial state" -- the protons in our case
-)
+ )
 
 (vector {LorentzVector}) gen_p4 : generated particle's four-vector momentum
 
