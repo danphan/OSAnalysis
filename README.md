@@ -50,13 +50,14 @@
 (vector {int}) gen_status : generated particle's status 
 
 (
-3 - "hard scattering" -- ie the actual things that collide.  In p p > ttW, that would be the t, t, and W only 
+ 3 - "hard scattering" -- the actual things that collide.  In p p > ttW, that would be the t, t, and W only 
 
-2 - "intermediate particle" -- something that was produced after the hard collision but did not survive to be directly detected by the detector 
+ 2 - "intermediate particle" -- something that was produced after the hard collision but did not survive to be directly    
+ detected by the detector 
 
-1 - "final state" -- the particles that will live "forever" as far as the simulator is concerned.  These are the ones we can detect
+ 1 - "final state" -- the particles that will live "forever" as far as the simulator is concerned.  These are the ones we can  detect
 
--1 -  for "initial state" -- the protons in our case
+ -1 -  for "initial state" -- the protons in our case
 )
 
 (vector {LorentzVector}) gen_p4 : generated particle's four-vector momentum
