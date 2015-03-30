@@ -53,7 +53,7 @@
 
 (int) event : event number
 
-(int) lumi : integrated luminosity
+(int) lumi : luminosity
 
 (int) run : run number
 
