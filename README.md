@@ -42,6 +42,8 @@
 (vector {LorentzVector}) jets_p4 : jets' four-vector momentum
 
 (vector {LorentzVector}) jets_disc : the discriminator of jets (If it is high, we kown the jet came from a bottom quark)
+
+(int) nBjets : number of jets came from botton quarks (disc > 0.679 , pt > 30, abs(eta) < 3, DeltaR >= 0.1)
 ```
 
 ```
@@ -68,8 +70,6 @@
 (int) lumi : luminosity
 
 (int) run : run number
-
-(int) nBjets : number of jets came from botton quarks
 
 (TString) filename : file's name
 
