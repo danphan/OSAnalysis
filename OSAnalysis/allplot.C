@@ -1,5 +1,5 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-#include "/home/users/yanjunhe/dataMCplotMaker/dataMCplotMaker.h"
+#include "/home/users/danphan/dataMCplotMaker/dataMCplotMaker.h"
 #include "SS.h"
 #include "/home/users/yanjunhe/CORE/muonSelections.h"
 #include "/home/users/yanjunhe/CORE/susySelections.h"
@@ -9,6 +9,7 @@
 #include <iostream>
 
 using namespace Jack;
+using namespace std;
 
 int allplot(){
  
@@ -37,9 +38,9 @@ int allplot(){
   unsigned int nEventsTreeData = tree_data->GetEntriesFast();
 
   for(unsigned int evt = 0; evt < nEventsTreeData; evt++) { 
- 
+
     object.GetEntry(evt);
-    
+ 
     //define leptons
     LorentzVector lep1 = lep1_p4(); 
     LorentzVector lep2 = lep2_p4(); 
@@ -49,7 +50,7 @@ int allplot(){
 
     //skip if leptons don't pass id/iso
     if (lep1_passes_id() == false || lep2_passes_id() == false) continue; 
- 
+  
     LorentzVector z_cand = lep1 + lep2;
 
     //fill lepton stuff
@@ -64,15 +65,16 @@ int allplot(){
     data_hist_phi1->Fill(z_cand.phi());
     data_hist_mass1->Fill(z_cand.mass()); 
     data_hist->Fill(met());
-    data_hist_numjet->Fill(njets());
 
     //fill jet stuff
-    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+    data_hist_numjet->Fill(jets_p4().size());
+    
+    for (unsigned int i = 0; i < jets_p4().size(); i++) {
       data_hist_jet_pt->Fill((jets_p4().at(i)).pt());
       data_hist_jet_eta->Fill((jets_p4().at(i)).eta());
     }
-  }
 
+  }
 
   //filling TT hists
   TFile *file_TT = new TFile("/nfs-3/userdata/danphan/baby_TT.root");
@@ -122,13 +124,16 @@ int allplot(){
     TT_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     TT_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     TT_hist->Fill(met(), scale1fb()*lumi*corr);
-    TT_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
-    
+
     //fill jet stuff
-    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+    for (unsigned int i = 0; i < jets_p4().size(); i++) {
       TT_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       TT_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+
+    TT_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
+
+
   }
 
   //filling TTW hists
@@ -179,13 +184,16 @@ int allplot(){
     TTW_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     TTW_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     TTW_hist->Fill(met(), scale1fb()*lumi*corr);
-    TTW_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
-    
+
     //fill jet stuff
-    for (unsigned int i = 0; i < jets_p4().size(); i++) { 
+    for (unsigned int i = 0; i < jets_p4().size(); i++) {
       TTW_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       TTW_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+
+    TTW_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
+
+
   }
 
   //filling TTZ hists
@@ -236,13 +244,15 @@ int allplot(){
     TTZ_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     TTZ_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     TTZ_hist->Fill(met(), scale1fb()*lumi*corr);
-    TTZ_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
       TTZ_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       TTZ_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+
+    TTZ_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
+    
   }
 
   //filling WZ hists
@@ -293,13 +303,13 @@ int allplot(){
     WZ_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     WZ_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     WZ_hist->Fill(met(), scale1fb()*lumi*corr);
-    WZ_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
       WZ_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       WZ_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+    WZ_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
   }
 
   //filling DY1 hists, M > 50
@@ -350,13 +360,13 @@ int allplot(){
     DY1_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     DY1_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     DY1_hist->Fill(met(), scale1fb()*lumi*corr);
-    DY1_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
       DY1_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       DY1_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+    DY1_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
   }
 
   //filling DY2 hists, 10 < M < 50
@@ -407,16 +417,27 @@ int allplot(){
     DY2_hist_phi1->Fill(z_cand.phi(), scale1fb()*lumi*corr);
     DY2_hist_mass1->Fill(z_cand.mass(), scale1fb()*lumi*corr); 
     DY2_hist->Fill(met(), scale1fb()*lumi*corr);
-    DY2_hist_numjet->Fill(njets(), scale1fb()*lumi*corr);
     
     //fill jet stuff
     for (unsigned int i = 0; i < jets_p4().size(); i++) { 
       DY2_hist_jet_pt->Fill((jets_p4().at(i)).pt(), scale1fb()*lumi*corr);
       DY2_hist_jet_eta->Fill((jets_p4().at(i)).eta(), scale1fb()*lumi*corr);
     }
+    DY2_hist_numjet->Fill(jets_p4().size(), scale1fb()*lumi*corr);
   }
 
+
   //using dataMCplotMaker to plot the hists made 
+
+  //manually adding colors
+  vector <Color_t> vec_colors;
+
+  vec_colors.push_back(kRed);
+  vec_colors.push_back(kViolet+4);
+  vec_colors.push_back(kCyan-4);
+  vec_colors.push_back(kOrange+10);
+  vec_colors.push_back(kYellow-4);
+  vec_colors.push_back(kGreen+3);
  
   //backgrounds
   vector <TH1F*> vec_hist;
@@ -439,7 +460,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist);
   vec_hist.push_back(DY2_hist);
 
-  dataMCplotMaker (data_hist,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName met --xAxisLabel MET --legendUp -0.05 --setMaximum 10e11" );
+  dataMCplotMaker (data_hist,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName met --xAxisLabel MET --legendUp -0.05 --setMaximum 10e11", vector<TH1F*>() ,vector<char*>() ,vec_colors );
  
   vec_hist.clear();
 
@@ -451,7 +472,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_pt);
   vec_hist.push_back(DY2_hist_pt);
 
-  dataMCplotMaker (data_hist_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName lep_pt --xAxisLabel pT --legendUp -0.05 --setMaximum 10e11 ");
+  dataMCplotMaker (data_hist_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName lep_pt --xAxisLabel pT --legendUp -0.05 --setMaximum 10e11 ", vector<TH1F*>() ,vector<char*>() ,vec_colors );
  
   vec_hist.clear();
 
@@ -463,7 +484,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_eta);
   vec_hist.push_back(DY2_hist_eta);
 
-  dataMCplotMaker (data_hist_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" );
+  dataMCplotMaker (data_hist_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" , vector<TH1F*>() ,vector<char*>() ,vec_colors );
 
   vec_hist.clear();
 
@@ -475,7 +496,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_phi);
   vec_hist.push_back(DY2_hist_phi);
 
-  dataMCplotMaker (data_hist_phi,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_phi --xAxisLabel #phi --legendUp -0.05 --setMaximum 10e11 ");
+  dataMCplotMaker (data_hist_phi,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName lep_phi --xAxisLabel #phi --legendUp -0.05 --setMaximum 10e11 ", vector<TH1F*>() ,vector<char*>() ,vec_colors );
 
   vec_hist.clear();
 
@@ -487,7 +508,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_pt1);
   vec_hist.push_back(DY2_hist_pt1);
 
-  dataMCplotMaker (data_hist_pt1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName Z_pt --xAxisLabel Z pT --legendUp -0.05 --setMaximum 10e11" );
+  dataMCplotMaker (data_hist_pt1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --outputName Z_pt --xAxisLabel Z pT --legendUp -0.05 --setMaximum 10e11" , vector<TH1F*>() ,vector<char*>() ,vec_colors );
 
   vec_hist.clear();
 
@@ -499,7 +520,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_eta1);
   vec_hist.push_back(DY2_hist_eta1);
 
-  dataMCplotMaker (data_hist_eta1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta --legendRight 0.1 --legendUp -0.05 --setMaximum 10e11 "); 
+  dataMCplotMaker (data_hist_eta1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit  --outputName Z_eta --xAxisLabel Z #eta --legendRight 0.1 --legendUp -0.05 --setMaximum 10e11 ", vector<TH1F*>() ,vector<char*>() ,vec_colors ); 
 
   vec_hist.clear();
 
@@ -511,7 +532,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_phi1);
   vec_hist.push_back(DY2_hist_phi1);
 
-  dataMCplotMaker (data_hist_phi1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2   --legendUp -0.05 --setMaximum 10e11  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi"); 
+  dataMCplotMaker (data_hist_phi1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2   --legendUp -0.05 --setMaximum 10e11  --noXaxisUnit --outputName Z_phi --xAxisLabel Z #phi", vector<TH1F*>() ,vector<char*>() ,vec_colors ); 
 
   vec_hist.clear();
 
@@ -523,7 +544,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_mass1);
   vec_hist.push_back(DY2_hist_mass1);
 
-  dataMCplotMaker (data_hist_mass1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11  --outputName Z_mass --xAxisLabel Z mass"); 
+  dataMCplotMaker (data_hist_mass1,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11  --outputName Z_mass --xAxisLabel Z mass", vector<TH1F*>() ,vector<char*>() ,vec_colors ); 
 
   vec_hist.clear();
 
@@ -535,7 +556,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_numjet);
   vec_hist.push_back(DY2_hist_numjet);
 
-  dataMCplotMaker (data_hist_numjet,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel"); 
+  dataMCplotMaker (data_hist_numjet,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2 --legendUp -0.05 --setMaximum 10e11 --noXaxisUnit --xAxisLabel number of jets  --outputName numjets --noDivisionLabel", vector<TH1F*>() ,vector<char*>() ,vec_colors ); 
 
   vec_hist.clear();
 
@@ -547,7 +568,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_jet_eta);
   vec_hist.push_back(DY2_hist_jet_eta);
 
-  dataMCplotMaker (data_hist_jet_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11" );
+  dataMCplotMaker (data_hist_jet_eta,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_eta --xAxisLabel #eta --legendUp -0.05 --setMaximum 10e11", vector<TH1F*>() ,vector<char*>() ,vec_colors  );
 
   vec_hist.clear();
 
@@ -559,7 +580,7 @@ int allplot(){
   vec_hist.push_back(DY1_hist_jet_pt);
   vec_hist.push_back(DY2_hist_jet_pt);
 
-  dataMCplotMaker (data_hist_jet_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_pt --xAxisLabel #pT --legendUp -0.05 --setMaximum 10e11" );
+  dataMCplotMaker (data_hist_jet_pt,vec_hist,vec_titles,"#geq 1 OS,SF dilepton pairs",""," --energy 8 --lumi 5.2  --noXaxisUnit --outputName jet_pt --xAxisLabel #pT --legendUp -0.05 --setMaximum 10e11", vector<TH1F*>() ,vector<char*>() ,vec_colors  );
 
   return 0;
 }
