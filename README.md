@@ -17,7 +17,7 @@
 
 (int) lep2_mc_id : The generated lepton 2 closest to the reco particle (used to see if we correctly reconstructed lepton 2)
 
-(int) hyp_type : hypothesis type (dimuons or dielectrons)
+(int) hyp_type : dilepton type (0 for muon-muon, 3 for electron-electron, 1 or 2 for mixed)
 
 (float) lep1_iso
 
