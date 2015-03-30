@@ -45,7 +45,7 @@
 ```
 
 ```
-(vector {int}) gen_id : generated particle's ID
+(vector {int}) gen_id : generated particle's ID (all of them)
 
 (vector {int}) gen_status : generated particle's status 
 
