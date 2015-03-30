@@ -23,9 +23,9 @@
 
 (float) lep2_iso
 
-(bool) lep1_passes_id : lepton 1's ID and iso
+(bool) lep1_passes_id : lepton 1's ID {muonId(lepton1 index, ZMet2012_v1)} and iso {passElectronSelection_ZMet2012_v3_Iso(lepton1 index)} 
 
-(bool) lep2_passes_id : lepton 2's ID and iso
+(bool) lep2_passes_id : lepton 2's ID {muonId(lepton2 index, ZMet2012_v1)} and iso {passElectronSelection_ZMet2012_v3_Iso(lepton2 index)} 
 
 (LorentzVector) lep1_p4 : lepton 1's four-vector momentum
 
