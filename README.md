@@ -49,7 +49,8 @@
 
 (vector {int}) gen_status : generated particle's status 
 
-(
+( gen_status numbers meaning:
+
  3 - "hard scattering" -- the actual things that collide.  In p p > ttW, that would be the t, t, and W only 
 
  2 - "intermediate particle" -- something that was produced after the hard collision but did not survive to be directly    
