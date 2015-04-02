@@ -19,7 +19,7 @@
 
 (int) hyp_type : dilepton type (0 for muon-muon, 3 for electron-electron, 1 or 2 for mixed)
 
-(float) lep1_iso : isolation: (∑pT(relative to track of lep1))/pT lep 1, summing over particles in a cone about lep1. lower is better(lep is pretty well isolated)
+(float) lep1_iso : isolation: (∑pT(relative to track of lep1))/pT lep 1, summing over particles in a cone about lep1. lower is better(lep is pretty well isolated) (The cone size is 0.4)
 
 (float) lep2_iso : same
 
